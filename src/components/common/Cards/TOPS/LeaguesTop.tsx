@@ -48,9 +48,7 @@ const LeagueTops: React.FC = () => {
 
   return (
     <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
-      <h2 className="text-[18px] font-bold uppercase mb-4">
-        MEJORES LIGAS
-      </h2>
+      <h2 className="text-[18px] font-bold uppercase mb-4">MEJORES LIGAS</h2>
       <div className="relative bg-white p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333]">
         <div className="flex flex-col gap-5">
           {competitions.map((competition) => (

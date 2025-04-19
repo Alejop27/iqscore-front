@@ -1,3 +1,4 @@
+// Al inicio, no hay cambios
 import React, { useState, useEffect } from "react";
 import { FaUser, FaCog, FaSearch } from "react-icons/fa";
 
@@ -28,7 +29,11 @@ const Navbar: React.FC = () => {
         
         {/* Logo + Search */}
         <div className="flex items-center gap-4 sm:gap-6 w-full max-w-[600px]">
-          <div className="text-lg font-bold whitespace-nowrap">logo</div>
+          <img
+            src="../../../../public/images/LogoIQ.png" // Cambia esto por la ruta real de tu logo
+            alt="IQSCORE Logo"
+            className="h-10 w-auto object-contain"
+          />
 
           <div className="relative flex-grow">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-[#EAEAEA]">
@@ -44,52 +49,43 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-      {/* Right side */}
-      <div className="hidden md:flex items-center gap-4 lg:gap-6">
-      <a
-        href="Leagues"
-        className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm"
-      >
-        LIGAS
-      </a>
-      <a
-        href="Teams"
-        className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm"
-      >
-        EQUIPOS
-      </a>
-      <a
-        href="#"
-        className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm"
-      >
-        FAVORITOS
-      </a>
+        {/* Right side */}
+        <div className="hidden md:flex items-center gap-4 lg:gap-6">
+          <a href="Leagues" className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm">
+            LIGAS
+          </a>
+          <a href="Teams" className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm">
+            EQUIPOS
+          </a>
+          <a href="#" className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm">
+            FAVORITOS
+          </a>
 
-        <button className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
-          <FaUser /> <span>INICIAR</span>
-        </button>
-
-        {/* Cog and Theme Menu */}
-        <div className="relative">
-          <button
-            className="text-white hover:text-gray-300 transition text-xl"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <FaCog />
+          <button className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
+            <FaUser /> <span>INICIAR</span>
           </button>
-          {menuOpen && (
-            <div className="absolute left-[-110px] mt-2 bg-white dark:bg-[#2b2b2b] p-4 rounded-lg shadow-lg w-48 z-20">
-              <p className="font-semibold text-gray-700 dark:text-gray-200">Opciones de Modo</p>
-              <button
-                className="mt-2 w-full py-2 px-4 bg-[#4a5568] text-white rounded-md hover:bg-[#1D1B20] transition"
-                onClick={handleThemeChange}
-              >
-                Claro/Oscuro
-              </button>
-            </div>
-          )}
+
+          {/* Cog and Theme Menu */}
+          <div className="relative">
+            <button
+              className="text-white hover:text-gray-300 transition text-xl"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <FaCog />
+            </button>
+            {menuOpen && (
+              <div className="absolute left-[-110px] mt-2 bg-white dark:bg-[#2b2b2b] p-4 rounded-lg shadow-lg w-48 z-20">
+                <p className="font-semibold text-gray-700 dark:text-gray-200">Opciones de Modo</p>
+                <button
+                  className="mt-2 w-full py-2 px-4 bg-[#4a5568] text-white rounded-md hover:bg-[#1D1B20] transition"
+                  onClick={handleThemeChange}
+                >
+                  Claro/Oscuro
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
       </nav>
     </div>
   );

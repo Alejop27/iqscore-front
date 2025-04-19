@@ -4,7 +4,7 @@ import React from 'react';
 import AD1 from '../components/common/Cards/ADS/Ad1';
 import InfoTeam from '../components/common/Team/InfoTeam';
 import PlayerTeam from '../components/common/Team/PlayersTeam';
-import TablePositions from '../components/common/Team/TablePositions';
+import TablePositions from '../components/common/Team/TablePositionsTeam';
 import TeamGames from '../components/common/Team/TeamGames';
 
 const Container = styled.div`
@@ -23,7 +23,7 @@ const FullWidthSection = styled.div`
 
 const TwoColumnContainer = styled.div`
   display: grid;
-  grid-template-columns: 35% 63%;
+  grid-template-columns: 40% 60%;
   width: 100%;
   gap: 2rem;
   margin: 30px 0;
@@ -56,6 +56,10 @@ const Team: React.FC = () => {
                         </div>
 
                         <div>
+                            <TeamGames />
+                        </div>  
+
+                        <div>
                             <PlayerTeam />
                         </div>
 
@@ -65,10 +69,6 @@ const Team: React.FC = () => {
                         <div>
                             <TablePositions />
                         </div>
-                        
-                        <div>
-                            <TeamGames />
-                        </div>  
                     </RightColumn>
                 </TwoColumnContainer>
             </Container>
