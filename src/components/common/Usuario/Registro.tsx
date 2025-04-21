@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function RegistroSteps() {
+const RegistroSteps: React.FC = () => {
   const [step, setStep] = useState(1);
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
@@ -179,3 +179,6 @@ function PasoTres() {
     </div>
   );
 }
+
+
+export default RegistroSteps;

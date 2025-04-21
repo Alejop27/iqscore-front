@@ -2,7 +2,7 @@ import React from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const AllTeams = () => {
-  const [favorites, setFavorites] = React.useState({
+  const [favorites, setFavorites] = React.useState<Record<string, boolean>>({
     "real-madrid": false,
     "barcelona": false,
     "manchester-city": false,
@@ -11,43 +11,49 @@ const AllTeams = () => {
     "juventus": false,
   });
 
-  const toggleFavorite = (team) => {
-    setFavorites({
-      ...favorites,
-      [team]: !favorites[team],
-    });
+  const toggleFavorite = (team: string) => {
+    setFavorites((prev) => ({
+      ...prev,
+      [team]: !prev[team],
+    }));
   };
 
   const teams = [
     {
       id: "real-madrid",
       name: "Real Madrid",
-      logo: "https://static0.givemesportimages.com/wordpress/wp-content/uploads/2024/08/real-madrid-logo-resized.png",
+      logo:
+        "https://static0.givemesportimages.com/wordpress/wp-content/uploads/2024/08/real-madrid-logo-resized.png",
     },
     {
       id: "barcelona",
       name: "FC Barcelona",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png",
+      logo:
+        "https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png",
     },
     {
       id: "manchester-city",
       name: "Manchester City",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/1200px-Manchester_City_FC_badge.svg.png",
+      logo:
+        "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/1200px-Manchester_City_FC_badge.svg.png",
     },
     {
       id: "bayern-munich",
       name: "Bayern Munich",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/1200px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
+      logo:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/1200px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
     },
     {
       id: "psg",
       name: "Paris Saint-Germain",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Paris_Saint-Germain_F.C..svg/1200px-Paris_Saint-Germain_F.C..svg.png",
+      logo:
+        "https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Paris_Saint-Germain_F.C..svg/1200px-Paris_Saint-Germain_F.C..svg.png",
     },
     {
       id: "juventus",
       name: "Juventus",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Juventus_FC_2017_icon_%28black%29.svg/1200px-Juventus_FC_2017_icon_%28black%29.svg.png",
+      logo:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Juventus_FC_2017_icon_%28black%29.svg/1200px-Juventus_FC_2017_icon_%28black%29.svg.png",
     },
   ];
 

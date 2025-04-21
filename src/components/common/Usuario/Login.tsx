@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+const Login: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -80,3 +80,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;
