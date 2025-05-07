@@ -4,11 +4,15 @@ const Footer: React.FC = () => {
   return (
     <div className="bg-[#2c3ec4] dark:bg-[#111517] w-full flex justify-center">
       <footer className="font-nunito text-white px-6 py-10 w-full max-w-[1240px] flex justify-between flex-col md:flex-row gap-8 box-border">
-        <div className="flex flex-col items-start gap-5">
-          <div className="text-lg font-bold mb-2">logo (EN PROCESO)</div>
-          <div className="text-sm mb-2">
-            2025 IQ-Score | Todos los derechos reservados
-          </div>
+      <div className="flex flex-col items-start gap-5">
+  <img
+    src="/images/LogoIQ.png" // Reemplaza esta ruta por la real
+    alt="IQ-Score Logo"
+    className="h-20 w-auto mb-2"
+  />
+  <div className="text-sm mb-2">
+    2025 IQ-Score | Todos los derechos reservados
+  </div>
           <div className="flex flex-col sm:flex-row text-sm gap-1 sm:gap-2">
             <a href="mailto:Soportesoporte@IQ-Score.com.co" className="hover:underline">Soportesoporte@IQ-Score.com.co</a>
             <span className="hidden sm:inline-block mx-1">|</span>

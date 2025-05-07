@@ -57,21 +57,21 @@ const PartidosTop: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndice((prev) => (prev < partidos.length - 1 ? prev + 1 : 0));
-    }, 6000); // Cambia cada 7 segundos
+    }, 6000); // Cambia cada 6 segundos
 
     return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
   }, []);
 
   return (
     <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
-      <h2 className="text-[18px] font-bold uppercase mb-4">
+      <h2 className="text-[16px] md:text-[18px] font-bold uppercase mb-2 md:mb-4 px-2 md:px-0">
         PARTIDOS TOP DE LA SEMANA
       </h2>
 
-      <div className="relative bg-white p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333]">
+      <div className="relative bg-white p-3 md:p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333]">
         <button
           onClick={handlePrev}
-          className="absolute left-5 top-1/2 transform -translate-y-1/2 text-black dark:text-white text-xl opacity-70 hover:opacity-100"
+          className="absolute left-1 md:left-5 top-1/2 transform -translate-y-1/2 text-black dark:text-white text-lg md:text-xl opacity-70 hover:opacity-100 z-10"
         >
           <FaChevronLeft />
         </button>
@@ -84,34 +84,36 @@ const PartidosTop: React.FC = () => {
             }}
           >
             {partidos.map((partido, index) => (
-              <div key={index} className="flex justify-between items-center px-8 py-4 w-full">
-                <div className="flex flex-col items-center gap-4 text-center w-[250px]">
+              <div key={index} className="flex flex-row justify-between items-center px-2 md:px-8 py-4 w-full min-w-full shrink-0">
+                {/* Equipo Local */}
+                <div className="flex flex-col items-center gap-1 md:gap-4 text-center w-1/3 md:w-[250px]">
                   <img
                     src={partido.local.logo}
                     alt={`${partido.local.nombre} Logo`}
-                    className="w-[120px] h-[120px] object-contain"
+                    className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] md:w-[90px] md:h-[90px] lg:w-[120px] lg:h-[120px] object-contain"
                   />
-                  <h3 className="text-[14px] uppercase">{partido.local.nombre}</h3>
+                  <h3 className="text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] uppercase mt-1 truncate w-full">{partido.local.nombre}</h3>
                 </div>
 
-                <div className="flex flex-col items-center gap-4">
-                  <div className="text-black dark:text-white text-[20px]">
+                {/* VS y Cuotas */}
+                <div className="flex flex-col items-center gap-1 md:gap-4 w-1/3">
+                  <div className="text-black dark:text-white text-[11px] sm:text-[12px] md:text-[16px] lg:text-[20px] font-semibold">
                     {partido.fecha}
                   </div>
 
                   {/* Etiquetas 1 X 2 */}
-                  <div className="flex justify-center gap-2 text-[14px] text-black dark:text-white font-semibold mt-2">
-                    <div className="w-[60px] text-center">1</div>
-                    <div className="w-[60px] text-center">X</div>
-                    <div className="w-[60px] text-center">2</div>
+                  <div className="flex justify-center gap-1 md:gap-2 text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] text-black dark:text-white font-semibold mt-1 md:mt-2">
+                    <div className="w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px] text-center">1</div>
+                    <div className="w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px] text-center">X</div>
+                    <div className="w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px] text-center">2</div>
                   </div>
 
                   {/* Valores de cuotas */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 md:gap-2">
                     {partido.cuotas.map((cuota, idx) => (
                       <div
                         key={idx}
-                        className="bg-[#8400FF] text-white px-3 py-1 text-center rounded-sm text-[16px] w-[60px]"
+                        className="bg-[#8400FF] text-white px-1 md:px-3 py-1 text-center rounded-sm text-[8px] sm:text-[10px] md:text-[14px] lg:text-[16px] w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px]"
                       >
                         {cuota}
                       </div>
@@ -119,13 +121,14 @@ const PartidosTop: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center gap-4 text-center w-[250px]">
+                {/* Equipo Visitante */}
+                <div className="flex flex-col items-center gap-1 md:gap-4 text-center w-1/3 md:w-[250px]">
                   <img
                     src={partido.visitante.logo}
                     alt={`${partido.visitante.nombre} Logo`}
-                    className="w-[120px] h-[120px] object-contain"
+                    className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] md:w-[90px] md:h-[90px] lg:w-[120px] lg:h-[120px] object-contain"
                   />
-                  <h3 className="text-[14px] uppercase">{partido.visitante.nombre}</h3>
+                  <h3 className="text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] uppercase mt-1 truncate w-full">{partido.visitante.nombre}</h3>
                 </div>
               </div>
             ))}
@@ -134,10 +137,23 @@ const PartidosTop: React.FC = () => {
 
         <button
           onClick={handleNext}
-          className="absolute right-5 top-1/2 transform -translate-y-1/2 text-black dark:text-white text-xl opacity-70 hover:opacity-100"
+          className="absolute right-1 md:right-5 top-1/2 transform -translate-y-1/2 text-black dark:text-white text-lg md:text-xl opacity-70 hover:opacity-100 z-10"
         >
           <FaChevronRight />
         </button>
+        
+        {/* Pagination indicators */}
+        <div className="flex justify-center mt-2 md:mt-4 gap-1 md:gap-2">
+          {partidos.map((_, idx) => (
+            <div 
+              key={idx}
+              className={`h-1 md:h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                idx === indice ? "w-4 md:w-6 bg-[#8400FF]" : "w-1 md:w-2 bg-gray-300 dark:bg-gray-600"
+              }`}
+              onClick={() => setIndice(idx)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

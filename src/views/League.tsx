@@ -13,10 +13,13 @@ const Container = styled.div`
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
-  padding: 0;
-  margin-top: 100px; /* Esto da espacio para el navbar fijo */
+  margin-top: 100px;
 
+  @media (max-width: 768px) {
+    padding: 0 1rem; /* 16px a los lados en móviles */
+  }
 `;
+
 
 const FullWidthSection = styled.div`
   display: flex;
@@ -24,71 +27,84 @@ const FullWidthSection = styled.div`
   margin: 30px 0;
 `;
 
-const TwoColumnContainer = styled.div`
+const GridLayout = styled.div`
   display: grid;
+  grid-template-areas:
+    "info    table"
+    "games   table"
+    "ads     table"
+    "scorers scorers";
   grid-template-columns: 40% 60%;
-  width: 100%;
   gap: 2rem;
   margin: 30px 0;
+
+  @media (max-width: 768px) {
+    grid-template-areas:
+      "info"
+      "table"
+      "scorers"
+      "games";
+    grid-template-columns: 1fr;
+  }
 `;
 
-const LeftColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+const LeagueInfoWrapper = styled.div`
+  grid-area: info;
 `;
 
-const RightColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+const TablePositionsWrapper = styled.div`
+  grid-area: table;
 `;
 
-const ThreeColumnContainer = styled.div`
+const GamesLeagueWrapper = styled.div`
+  grid-area: games;
+`;
+
+const ThreeColumnWrapper = styled.div`
+  grid-area: scorers;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 100%;
   gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const League: React.FC = () => {
-    return (
-        <PageWithLayout>
-            <Container>
-                <FullWidthSection>
-                    <AD1 />
-                </FullWidthSection>
+  return (
+    <PageWithLayout>
+      <Container>
+        <FullWidthSection>
+          <AD1 />
+        </FullWidthSection>
 
-                <TwoColumnContainer>
-                    <LeftColumn>
-                      <div>
-                        <LeagueInfo />
-                      </div>
-                      <div>
-                        <GamesLeague />
-                      </div>
-                    </LeftColumn>
+        <GridLayout>
+          <LeagueInfoWrapper>
+            <LeagueInfo />
+          </LeagueInfoWrapper>
 
-                    <RightColumn>
-                    <div>
-                        <TablePositionsLeague />
-                    </div>
+          <TablePositionsWrapper>
+            <TablePositionsLeague />
+          </TablePositionsWrapper>
 
-                    <ThreeColumnContainer>
-                          <TopScorers />
-                          <TopAssistant />
-                          <TopCards />
-                      </ThreeColumnContainer>
-                    </RightColumn>
+          <ThreeColumnWrapper>
+            <TopScorers />
+            <TopAssistant />
+            <TopCards />
+          </ThreeColumnWrapper>
 
-                </TwoColumnContainer>
+          <GamesLeagueWrapper>
+            <GamesLeague />
+          </GamesLeagueWrapper>
+        </GridLayout>
 
-                <FullWidthSection>
-                    <AD1 />
-                </FullWidthSection>
-            </Container>
-        </PageWithLayout>
-    )
-}
+        <FullWidthSection>
+          <AD1 />
+        </FullWidthSection>
+      </Container>
+    </PageWithLayout>
+  );
+};
 
 export default League;

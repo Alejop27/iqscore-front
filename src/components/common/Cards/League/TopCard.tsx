@@ -1,68 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-interface Scorer {
-  name: string;
-  image: string;
-  matchesPlayed: number;
-  goals: number;
+interface CardPlayer {
+  idJugador: number;
+  nombre: string;
+  tarjetas_amarillas: number;
 }
 
-const scorers: Scorer[] = [
-  {
-    name: "Jugador 1",
-    image: "/players/mbappe.png",
-    matchesPlayed: 12,
-    goals: 12,
-  },
-  {
-    name: "Jugador 2",
-    image: "/players/barcelona1.png",
-    matchesPlayed: 12,
-    goals: 12,
-  },
-  {
-    name: "Jugador 3",
-    image: "/players/muller.png",
-    matchesPlayed: 12,
-    goals: 12,
-  },
-  {
-    name: "Jugador 4",
-    image: "/players/unknown1.png",
-    matchesPlayed: 12,
-    goals: 12,
-  },
-  {
-    name: "Jugador 5",
-    image: "/players/barcelona2.png",
-    matchesPlayed: 12,
-    goals: 12,
-  },
-];
-
 const TopCards: React.FC = () => {
+  const { idLiga } = useParams<{ idLiga: string }>();
+  const [cardPlayers, setCardPlayers] = useState<CardPlayer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!idLiga) return;
+
+    const fetchCardPlayers = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/liga/jugadores/mas-tarjetas-amarillas/${idLiga}`);
+        const data = await response.json();
+        setCardPlayers(data);
+      } catch (error) {
+        console.error("Error fetching players with yellow cards:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCardPlayers();
+  }, [idLiga]);
+
+  if (!idLiga) {
+    return <div className="text-center text-black dark:text-white">No se ha seleccionado una liga.</div>;
+  }
+
+  if (loading) {
+    return <div className="text-center text-black dark:text-white">Cargando jugadores con más tarjetas amarillas...</div>;
+  }
+
   return (
     <div className="max-w-[250px] text-black dark:text-white font-nunito">
-      {/* Título por fuera de la card */}
-      <h2 className="text-[18px] font-bold uppercase mb-4">Tarjetas</h2>
+      <h2 className="text-[18px] font-bold uppercase mb-4">Tarjetas Amarillas</h2>
 
-      {/* Card */}
-      <div className="bg-white dark:bg-[#111517] text-white rounded-xl p-4 shadow-md border border-[#ccc] dark:bg-[#1c1f22] dark:shadow-[0_10px_20px_#111517,0_0_0px_#BEBEBE] dark:border-[#333]">
-        <div className="flex justify-end pr-4 text-sm text-gray-300">
-          <div className="w-[40px] text-center text-black dark:text-white">PJ</div>
-          <div className="w-[40px] text-center text-black dark:text-white">G</div>
+      <div className="bg-white text-white rounded-xl p-4 shadow-md border border-[#ccc] dark:bg-[#1c1f22] dark:shadow-[0_10px_20px_#111517,0_0_0px_#BEBEBE] dark:border-[#333]">
+        <div className="flex justify-between pr-4 text-sm text-gray-300">
+          <div className="w-12 text-center ml-4 text-black dark:text-white">NOMBRE</div>
+          <div className="w-[40px] text-center text-black dark:text-white">T.A.</div>
         </div>
+
         <div className="space-y-4 mt-2">
-          {scorers.map((scorer, idx) => (
-            <div key={idx} className="flex items-center justify-between">
-              <img
-                src={scorer.image}
-                alt={scorer.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
+          {cardPlayers.map((player) => (
+            <div key={player.idJugador} className="flex items-center justify-between">
+              <div className="w-12 h-12 flex items-center justify-center text-center text-sm text-black dark:text-white leading-tight break-words ml-4">
+                {player.nombre}
+              </div>
               <div className="flex gap-4 pr-4">
-                <div className="w-[40px] text-center text-black dark:text-white">{scorer.matchesPlayed}</div>
-                <div className="w-[40px] text-center text-black dark:text-white">{scorer.goals}</div>
+                <div className="w-[40px] text-center text-black dark:text-white">{player.tarjetas_amarillas}</div>
               </div>
             </div>
           ))}

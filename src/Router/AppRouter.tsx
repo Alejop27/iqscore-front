@@ -7,8 +7,12 @@ import Teams from '../views/Teams'
 import Game from '../views/Game'
 import Player from '../views/Player'
 import AboutUs from '../views/About'
-import RegistroSteps from '../components/common/Usuario/Registro'
-import Login from '../components/common/Usuario/Login'
+import Registro from '../views/Registro'
+import Iniciar from '../views/Login'
+import Account from '../views/Account'
+import ResetPassword from '../views/ResetPassword'
+import NotFound from '../views/404'
+import Favorites from '../views/Favorites'
 
 export const router = createBrowserRouter([
     {
@@ -16,11 +20,11 @@ export const router = createBrowserRouter([
         element: <Home />,
     },
     {
-        path: '/team',
+        path: '/team/:teamId',
         element: <Team />
     },
     {
-        path: '/league',
+        path: '/league/:idLiga',
         element: <League />
     },
     {
@@ -36,7 +40,7 @@ export const router = createBrowserRouter([
         element: <Game />
     },
     {
-        path: '/player',
+        path: '/player/:playerId',
         element: <Player />
     },
     {
@@ -44,12 +48,29 @@ export const router = createBrowserRouter([
         element: <AboutUs />
     },
     {
+        path: '/Iniciar',
+        element: <Iniciar />
+    },
+
+    {
         path: '/Registro',
-        element: <RegistroSteps />
+        element: <Registro />
     },
     {
-        path: '/Login',
-        element: <Login />
+        path: '/Reestablecer',
+        element: <ResetPassword />
+    },
+    {
+        path: '/cuenta',
+        element: <Account />
+    },
+    {
+        path: '*',
+        element: <NotFound />
+    },
+    {
+        path: '/favoritos',
+        element: <Favorites />
     }
 
 

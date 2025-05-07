@@ -5,20 +5,27 @@ import AD1 from '../components/common/Cards/ADS/Ad1';
 import PlayerProfile from '../components/common/Player/ProfilePlayer';
 import PlayerTrajectory from '../components/common/Player/TeamsPlayer';
 import Statistics from '../components/common/Player/statistics';
-import NationalTeam from '../components/common/Player/NationalTeam';
+
+const breakpoints = {
+  mobile: '768px',
+};
 
 const Container = styled.div`
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
   padding: 0;
-  margin-top: 100px; /* Esto da espacio para el navbar fijo */
+  margin-top: 100px;
 `;
 
 const FullWidthSection = styled.div`
   display: flex;
   justify-content: center;
   margin: 30px 0;
+
+  @media (max-width: ${breakpoints.mobile}) {
+    display: none;
+  }
 `;
 
 const TwoColumnContainer = styled.div`
@@ -27,6 +34,10 @@ const TwoColumnContainer = styled.div`
   width: 100%;
   gap: 2rem;
   margin: 30px 0;
+
+  @media (max-width: ${breakpoints.mobile}) {
+    display: none;
+  }
 `;
 
 const LeftColumn = styled.div`
@@ -41,50 +52,67 @@ const RightColumn = styled.div`
   gap: 30px;
 `;
 
+const MobileContainer = styled.div`
+  display: none;
+
+  @media (max-width: ${breakpoints.mobile}) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px 0;
+
+    & > div {
+      width: 100%;
+    }
+  }
+`;
+
 const Player: React.FC = () => {
-    return (
-        <PageWithLayout>
-            <Container>
-                <FullWidthSection>
-                    <AD1 />
-                </FullWidthSection>
+  return (
+    <PageWithLayout>
+      <Container>
+        <FullWidthSection>
+          <AD1 />
+        </FullWidthSection>
 
-                <TwoColumnContainer>
-                    <LeftColumn>
-                        <div>
-                            <PlayerProfile />
-                        </div>  
-                    </LeftColumn>
+        {/* Desktop Layout */}
+        <TwoColumnContainer>
+          <LeftColumn>
+            <div>
+              <PlayerProfile />
+            </div>
+          </LeftColumn>
 
+          <RightColumn>
+            <div>
+              <PlayerTrajectory />
+            </div>
+          </RightColumn>
+        </TwoColumnContainer>
 
-                    <RightColumn>
-                      <div>
-                        <PlayerTrajectory />
-                      </div>
+        <FullWidthSection>
+          <Statistics />
+        </FullWidthSection>
 
-                    </RightColumn>
-                </TwoColumnContainer>
+        <FullWidthSection>
+          <AD1 />
+        </FullWidthSection>
 
-                <FullWidthSection>
-                  <Statistics />
-                </FullWidthSection>
-
-                <TwoColumnContainer>
-                <LeftColumn>
-                    <div>
-                  <NationalTeam />
-                  </div>
-                </LeftColumn>
-                </TwoColumnContainer>
-
-
-                <FullWidthSection>
-                    <AD1 />
-                </FullWidthSection>
-                
-            </Container>
-        </PageWithLayout>
-    )
-}
+        {/* Mobile Layout */}
+        <MobileContainer>
+          <div>
+            <PlayerProfile />
+          </div>
+          <div>
+            <PlayerTrajectory />
+          </div>
+          <div>
+            <Statistics />
+          </div>
+        </MobileContainer>
+      </Container>
+    </PageWithLayout>
+  );
+};
 
 export default Player;

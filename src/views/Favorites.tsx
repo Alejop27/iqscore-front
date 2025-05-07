@@ -1,14 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
 import PageWithLayout from '../components/PageWithLayout';
+import PartidosTop from '../components/common/Cards/TOPS/PartidosTop';
+import PartidosDelDia from '../components/common/PrincipalPage/GameDay';
 import AD1 from '../components/common/Cards/ADS/Ad1';
-import MatchInfo from '../components/common/Game/InfoGame';
-import BettingOdds from '../components/common/Game/Odds';
-import StartingLineup from '../components/common/Game/Headlines';
+import AD4 from '../components/common/Cards/ADS/Ad4';
 import Ad3 from '../components/common/Cards/ADS/Ad3';
+import AllFavorites from '../components/common/All/AllFavorites';
 
+// Breakpoints for media queries
 const breakpoints = {
-  mobile: '768px',
+  mobile: '768px', // Standard md: breakpoint in Tailwind, matching the navbar's responsiveness
 };
 
 const Container = styled.div`
@@ -16,10 +18,10 @@ const Container = styled.div`
   max-width: 1240px;
   margin: 0 auto;
   padding: 0 16px;
-  margin-top: 100px;
+  margin-top: 100px; /* Esto da espacio para el navbar fijo */
 
   @media (max-width: ${breakpoints.mobile}) {
-    margin-top: 80px;
+    margin-top: 80px; /* Slightly less top margin on mobile */
   }
 `;
 
@@ -27,21 +29,21 @@ const FullWidthSection = styled.div`
   display: flex;
   justify-content: center;
   margin: 30px 0;
-
+  
   @media (max-width: ${breakpoints.mobile}) {
-    display: none;
+    display: none; /* Hide ads on mobile */
   }
 `;
 
 const TwoColumnContainer = styled.div`
   display: grid;
-  grid-template-columns: 60% 38%;
+  grid-template-columns: 42% 58%;
   width: 100%;
-  gap: 1rem;
+  gap: 2rem;
   margin: 30px 0;
-
+  
   @media (max-width: ${breakpoints.mobile}) {
-    display: none;
+    display: none; /* Hide desktop layout on mobile */
   }
 `;
 
@@ -57,74 +59,74 @@ const RightColumn = styled.div`
   gap: 30px;
 `;
 
-// Mobile-specific layout
+// Mobile-specific container that only shows on smaller screens
 const MobileContainer = styled.div`
   display: none;
-
+  
   @media (max-width: ${breakpoints.mobile}) {
     display: flex;
     flex-direction: column;
     gap: 20px;
     margin: 20px 0;
+    width: 100%; /* Ensure full width on mobile */
+  }
+  
+  /* Ensure children take full width */
+  & > div {
     width: 100%;
-
-    & > div {
-      width: 100%;
-    }
   }
 `;
 
-const Game: React.FC = () => {
+const Favorites: React.FC = () => {
   return (
     <PageWithLayout>
       <Container>
-        {/* Mobile-first layout */}
         <MobileContainer>
-            <div>
-                <AD1 />
-            </div>
           <div>
-            <MatchInfo />
+            <AD1 />
           </div>
           <div>
-            <BettingOdds />
+            <AllFavorites />
           </div>
           <div>
-            <StartingLineup />
+            <PartidosDelDia />
+          </div>
+          <div>
+            <Ad3 />
           </div>
         </MobileContainer>
 
-        {/* Desktop layout */}
+        {/* The sections below will be hidden on mobile but visible on larger screens */}
         <FullWidthSection>
           <AD1 />
         </FullWidthSection>
-
+        
         <TwoColumnContainer>
           <LeftColumn>
             <div>
-              <MatchInfo />
-            </div>
-            <div>
-              <StartingLineup />
-            </div>
-          </LeftColumn>
-
-          <RightColumn>
-            <div>
-              <BettingOdds />
+              <AllFavorites />
             </div>
             <div>
               <Ad3 />
             </div>
+          </LeftColumn>
+          
+          <RightColumn>
+            <div>
+              <PartidosTop />
+            </div>
+            <div>
+              <PartidosDelDia />
+            </div>
           </RightColumn>
         </TwoColumnContainer>
-
+        
         <FullWidthSection>
-          <AD1 />
+          <AD4 />
         </FullWidthSection>
       </Container>
     </PageWithLayout>
   );
 };
 
-export default Game;
+export default Favorites;
