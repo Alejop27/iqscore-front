@@ -13,6 +13,7 @@ import Account from '../views/Account'
 import ResetPassword from '../views/ResetPassword'
 import NotFound from '../views/404'
 import Favorites from '../views/Favorites'
+import PaymentGateway from '../components/common/Account/PaymentGateway'
 
 export const router = createBrowserRouter([
     {
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
     {
         path: '/favoritos',
         element: <Favorites />
+    },
+    {
+        path: '/pagar',
+        element: <PaymentGateway />
     }
 
 
