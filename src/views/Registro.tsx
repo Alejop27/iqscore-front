@@ -4,16 +4,20 @@ import { motion } from "framer-motion";
 const Registro = () => {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    // Datos personales
+    // Datos de cuenta
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    // Datos adicionales
-    edad: "",
-    pais: "",
-    departamento: "",
-    ciudad: ""
+    // Datos personales
+    firstName: "",
+    lastName: "",
+    age: "",
+    country: "",
+    state: "",
+    city: "",
+    birthDate: "",
+    cedula: ""
   });
   const [error, setError] = useState("");
 
@@ -21,7 +25,7 @@ const Registro = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   
-
+  
   const nextStep = () => {
     if (form.password !== form.confirmPassword) {
       setError("Las contraseñas no coinciden");
@@ -35,7 +39,7 @@ const Registro = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (parseInt(form.edad) < 18) {
+    if (parseInt(form.age) < 18) {
       setError("Debes ser mayor de 18 años");
       return;
     }
@@ -43,7 +47,7 @@ const Registro = () => {
     // Aquí iría la lógica para enviar datos
   };
   
-
+  
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">
       {/* Efectos de fondo */}
@@ -214,25 +218,77 @@ const Registro = () => {
               ) : (
                 // Paso 2: Datos de perfil
                 <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-white/70 mb-2">Nombres</label>
+                      <input
+                        name="firstName"
+                        value={form.firstName}
+                        onChange={handleChange}
+                        className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
+                        placeholder="Nombres"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm text-white/70 mb-2">Apellidos</label>
+                      <input
+                        name="lastName"
+                        value={form.lastName}
+                        onChange={handleChange}
+                        className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
+                        placeholder="Apellidos"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-white/70 mb-2">Edad</label>
+                      <input
+                        type="number"
+                        name="age"
+                        value={form.age}
+                        onChange={handleChange}
+                        className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
+                        placeholder="Tu edad"
+                        required
+                        min="18"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-white/70 mb-2">Fecha de nacimiento</label>
+                      <input
+                        type="date"
+                        name="birthDate"
+                        value={form.birthDate}
+                        onChange={handleChange}
+                        className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
                   <div>
-                    <label className="block text-sm text-white/70 mb-2">Edad</label>
+                    <label className="block text-sm text-white/70 mb-2">Cédula</label>
                     <input
-                      type="number"
-                      name="edad"
-                      value={form.edad}
+                      name="cedula"
+                      value={form.cedula}
                       onChange={handleChange}
                       className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
-                      placeholder="Tu edad"
+                      placeholder="Número de identificación"
                       required
-                      min="18"
                     />
                   </div>
                   
                   <div>
                     <label className="block text-sm text-white/70 mb-2">País</label>
                     <select
-                      name="pais"
-                      value={form.pais}
+                      name="country"
+                      value={form.country}
                       onChange={handleChange}
                       className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
                       required
@@ -246,28 +302,30 @@ const Registro = () => {
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-sm text-white/70 mb-2">Ciudad</label>
-                    <input
-                      name="Departamento"
-                      value={form.departamento}
-                      onChange={handleChange}
-                      className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
-                      placeholder="Tu ciudad"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm text-white/70 mb-2">Ciudad</label>
-                    <input
-                      name="ciudad"
-                      value={form.ciudad}
-                      onChange={handleChange}
-                      className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
-                      placeholder="Tu ciudad"
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-white/70 mb-2">Departamento/Estado</label>
+                      <input
+                        name="state"
+                        value={form.state}
+                        onChange={handleChange}
+                        className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
+                        placeholder="Departamento"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-white/70 mb-2">Ciudad</label>
+                      <input
+                        name="city"
+                        value={form.city}
+                        onChange={handleChange}
+                        className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
+                        placeholder="Ciudad"
+                        required
+                      />
+                    </div>
                   </div>
                 </>
               )}

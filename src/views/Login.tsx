@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleGoogleSignIn = () => {
@@ -14,8 +14,15 @@ const Login: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login con email y contraseña", { email, password });
+  
+    const isEmail = /\S+@\S+\.\S+/.test(emailOrUsername);
+    console.log(
+      isEmail ? "Login con email" : "Login con usuario",
+      { emailOrUsername, password }
+    );
+  
   };
+  
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">
@@ -119,13 +126,13 @@ const Login: React.FC = () => {
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm text-white/70 mb-2">Correo electrónico</label>
+                <label className="block text-sm text-white/70 mb-2">Correo electrónico o usuario</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={emailOrUsername}
+                  onChange={(e) => setEmailOrUsername(e.target.value)}
                   className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
-                  placeholder="tu@email.com"
+                  placeholder="Correo o usuario"
                   required
                 />
               </div>
