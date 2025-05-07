@@ -194,23 +194,12 @@ export default function PartidosConAPI() {
                         onError={(e) => {e.currentTarget.src = '/placeholder-team.png'}}
                       />
                       <div className="text-sm text-black dark:text-white">{match.awayTeam.name}</div>
+                      <hr className="mt-4 border-t border-gray-300 dark:border-gray-600" />
+
                     </div>
                   </div>
                   
-                  {/* Odds */}
-                  {match.odds && (
-                    <div className="grid grid-cols-3 gap-2">
-                      <button className="text-xs border border-purple-600 text-black dark:text-white font-bold rounded px-3 py-1 hover:bg-purple-600 hover:text-white transition duration-200">
-                        {match.odds.home}
-                      </button>
-                      <button className="text-xs border border-purple-600 text-black dark:text-white font-bold rounded px-3 py-1 hover:bg-purple-600 hover:text-white transition duration-200">
-                        {match.odds.draw}
-                      </button>
-                      <button className="text-xs bg-purple-600 text-white font-bold rounded px-3 py-1 hover:bg-purple-700 transition duration-200">
-                        {match.odds.away}
-                      </button>
-                    </div>
-                  )}
+
                 </div>
               ))}
             </div>
