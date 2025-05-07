@@ -12,6 +12,7 @@ const Registro = () => {
     // Datos adicionales
     edad: "",
     pais: "",
+    departamento: "",
     ciudad: ""
   });
   const [error, setError] = useState("");
@@ -243,6 +244,18 @@ const Registro = () => {
                       <option value="ES">España</option>
                       <option value="US">Estados Unidos</option>
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-white/70 mb-2">Ciudad</label>
+                    <input
+                      name="Departamento"
+                      value={form.departamento}
+                      onChange={handleChange}
+                      className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF]"
+                      placeholder="Tu ciudad"
+                      required
+                    />
                   </div>
                   
                   <div>
