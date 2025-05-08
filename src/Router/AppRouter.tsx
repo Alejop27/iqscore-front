@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom'
+import ProtectedRoute from '../components/ProtectedRoute'
 import Home from '../views/Home'
 import Team from '../views/Team'
 import League from '../views/League'
@@ -16,43 +17,11 @@ import Favorites from '../views/Favorites'
 import PaymentGateway from '../components/common/Account/PaymentGateway'
 
 export const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <Home />,
-    },
-    {
-        path: '/team/:teamId',
-        element: <Team />
-    },
-    {
-        path: '/league/:idLiga',
-        element: <League />
-    },
-    {
-        path: '/leagues',
-        element: <Leagues />
-    },
-    {
-        path: '/teams',
-        element: <Teams />
-    },
-    {
-        path: '/game',
-        element: <Game />
-    },
-    {
-        path: '/player/:playerId',
-        element: <Player />
-    },
-    {
-        path: '/AboutUs',
-        element: <AboutUs />
-    },
+    // Rutas públicas
     {
         path: '/Iniciar',
         element: <Iniciar />
     },
-
     {
         path: '/Registro',
         element: <Registro />
@@ -62,21 +31,97 @@ export const router = createBrowserRouter([
         element: <ResetPassword />
     },
     {
-        path: '/cuenta',
-        element: <Account />
-    },
-    {
         path: '*',
         element: <NotFound />
     },
+
+    // Rutas protegidas
+    {
+        path: '/',
+        element: (
+            <ProtectedRoute>
+                <Home />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/team/:teamId',
+        element: (
+            <ProtectedRoute>
+                <Team />
+            </ProtectedRoute>
+        )
+    },
+    {
+        path: '/league/:idLiga',
+        element: (
+            <ProtectedRoute>
+                <League />
+            </ProtectedRoute>
+        )
+    },
+    {
+        path: '/leagues',
+        element: (
+            <ProtectedRoute>
+                <Leagues />
+            </ProtectedRoute>
+        )
+    },
+    {
+        path: '/teams',
+        element: (
+            <ProtectedRoute>
+                <Teams />
+            </ProtectedRoute>
+        )
+    },
+    {
+        path: '/game',
+        element: (
+            <ProtectedRoute>
+                <Game />
+            </ProtectedRoute>
+        )
+    },
+    {
+        path: '/player/:playerId',
+        element: (
+            <ProtectedRoute>
+                <Player />
+            </ProtectedRoute>
+        )
+    },
+    {
+        path: '/AboutUs',
+        element: (
+            <ProtectedRoute>
+                <AboutUs />
+            </ProtectedRoute>
+        )
+    },
+    {
+        path: '/cuenta',
+        element: (
+            <ProtectedRoute>
+                <Account />
+            </ProtectedRoute>
+        )
+    },
     {
         path: '/favoritos',
-        element: <Favorites />
+        element: (
+            <ProtectedRoute>
+                <Favorites />
+            </ProtectedRoute>
+        )
     },
     {
         path: '/pagar',
-        element: <PaymentGateway />
+        element: (
+            <ProtectedRoute>
+                <PaymentGateway />
+            </ProtectedRoute>
+        )
     }
-
-
 ])

@@ -1,30 +1,118 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
+import ReCAPTCHA from "react-google-recaptcha";
+
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { CredentialResponse } from '@react-oauth/google'; // Import type
+import { useAuth } from "../context/AuthContext"; // Import the auth hook
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Use the auth hook
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
 
-  const handleGoogleSignIn = () => {
-    console.log("Login con Google iniciado");
-  };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
-    const isEmail = /\S+@\S+\.\S+/.test(emailOrUsername);
-    console.log(
-      isEmail ? "Login con email" : "Login con usuario",
-      { emailOrUsername, password }
-    );
+    if (!captchaValue) {
+      alert("Por favor, completa el captcha antes de continuar.");
+      return;
+    }
   
+  
+    try {
+      const response = await fetch("http://localhost:3005/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailOrUsername,
+          password,
+          rememberMe,
+          captcha: captchaValue,  // 👈 ESTA ES LA CLAVE para que tu backend reciba el captcha
+        }),
+      });
+      
+  
+      const data = await response.json();
+      console.log(data); // 👉 Aquí puedes ver la respuesta completa
+  
+      if (response.ok) {
+        // ✅ Si el login es exitoso, actualiza el contexto y navega a la página principal
+        console.log("Login exitoso");
+        // Extrae el email del usuario de la respuesta
+        const email = data.email || (data.user && data.user.email) || emailOrUsername;
+        if (email) {
+          login({ email }); // Actualiza el contexto de autenticación
+        }
+        navigate("/"); // Cambia esto según la ruta de tu app
+      } else {
+        // 🚨 Muestra un error (puedes mejorarlo con un alert o un mensaje en pantalla)
+        alert(data.message || "Error en el login");
+      }
+    } catch (error) {
+      console.error("Error en la petición:", error);
+      alert("Hubo un problema al intentar iniciar sesión.");
+    }
+  };
+  
+  const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com"; // <-- pega aquí tu Client ID de Google
+
+  // Función para decodificar JWT y extraer información
+  function parseJwt(token: string) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const handleGoogleSuccess = async (response: CredentialResponse) => {
+    try {
+      const res = await fetch("http://localhost:3005/api/auth/google-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ credential: response.credential }), // 👈 solo esto
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // Intenta extraer el email de la respuesta o del token
+        let email = data.email || (data.user && data.user.email);
+        if (!email && data.token) {
+          const payload = parseJwt(data.token);
+          email = payload?.email;
+        }
+        // Si el backend solo responde con el token de Google, decodifica el JWT:
+        if (!email && response.credential) {
+          const payload = parseJwt(response.credential);
+          email = payload?.email;
+        }
+        if (email) {
+          login({ email }); // Actualiza el contexto de autenticación
+        }
+        alert("¡Login con Google exitoso!");
+        navigate("/");
+      } else {
+        alert(data.message || "Error en el login con Google");
+      }
+    } catch (error) {
+      console.error("Error en Google login:", error);
+      alert("Error inesperado en Google login");
+    }
   };
   
 
+
   return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">
       {/* Efectos de fondo */}
       <div className="absolute inset-0 overflow-hidden">
@@ -153,14 +241,28 @@ const Login: React.FC = () => {
               </div>
               
               <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="rounded border-[#354AED]/40 text-[#8400FF] focus:ring-[#8400FF] mr-2"
-                />
+              <input
+                type="checkbox"
+                id="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="rounded border-[#354AED]/40 text-[#8400FF] focus:ring-[#8400FF] mr-2"
+              />
+
                 <label htmlFor="remember" className="text-sm text-white/70">Mantener sesión iniciada</label>
               </div>
               
+<ReCAPTCHA
+  sitekey="6LeIJzIrAAAAACcwY43S_9iX_V1biscHsOcDOEvM" // 👈 Usa aquí el site key real de Google
+  onChange={(value) => {
+    console.log("Captcha value:", value);
+    setCaptchaValue(value);
+  }}
+  theme="dark" // Opcional, se verá mejor con tu diseño oscuro
+/>
+
+
+
               <button
                 type="submit"
                 className="w-full bg-[#354AED]  text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50"
@@ -174,14 +276,10 @@ const Login: React.FC = () => {
                 <div className="flex-grow border-t border-white/10"></div>
               </div>
               
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white py-3 rounded-lg hover:bg-white/10 transition-all"
-              >
-                <FcGoogle className="w-5 h-5" />
-                <span>Google</span>
-              </button>
+              <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => alert("Error al iniciar sesión con Google")}
+        />
               
               <p className="text-center text-white/60 text-sm mt-6">
                 ¿No tienes una cuenta?{" "}
@@ -222,13 +320,15 @@ const Login: React.FC = () => {
           repeat: Infinity,
         }}
       >
-        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
-          <svg className="w-10 h-10 text-[#1B1D20]" fill="currentColor" viewBox="0 0 24 24">
+        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
+          <svg className="w-6 h-6 text-[#1B1D20]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12,2C6.48,2,2,6.48,2,12c0,5.52,4.48,10,10,10s10-4.48,10-10C22,6.48,17.52,2,12,2z M12,4c1.5,0,2.9,0.35,4.14,0.97l-2.25,2.25 C13.3,7.07,12.66,7,12,7s-1.3,0.07-1.89,0.22L7.86,4.97C9.1,4.35,10.5,4,12,4z M4.97,7.86l2.25,2.25C7.07,10.7,7,11.34,7,12 s0.07,1.3,0.22,1.89l-2.25,2.25C4.35,14.9,4,13.5,4,12C4,10.5,4.35,9.1,4.97,7.86z M12,20c-1.5,0-2.9-0.35-4.14-0.97l2.25-2.25 C10.7,16.93,11.34,17,12,17s1.3-0.07,1.89-0.22l2.25,2.25C14.9,19.65,13.5,20,12,20z M12,15c-1.66,0-3-1.34-3-3s1.34-3,3-3 s3,1.34,3,3S13.66,15,12,15z M19.03,16.14l-2.25-2.25C16.93,13.3,17,12.66,17,12s-0.07-1.3-0.22-1.89l2.25-2.25 C19.65,9.1,20,10.5,20,12C20,13.5,19.65,14.9,19.03,16.14z"/>
           </svg>
         </div>
       </motion.div>
     </div>
+    </GoogleOAuthProvider>
+
   );
 }
 

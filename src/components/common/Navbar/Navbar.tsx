@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { FaUser, FaCog, FaSearch, FaList } from "react-icons/fa";
+import { FaUser, FaCog, FaSearch, FaList, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext"; // Asegúrate de que la ruta sea correcta
 
 interface Resultado {
   resultado: string;
@@ -10,6 +11,26 @@ interface Resultado {
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout, login } = useAuth();
+
+  // Sincroniza el usuario desde localStorage al contexto si es necesario
+  useEffect(() => {
+    if (!user) {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.email) {
+            login(parsed);
+          }
+        } catch (e) {
+          // Si hay error en el parseo, ignora
+        }
+      }
+    }
+    // Solo se ejecuta al montar o cuando user cambia a null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
@@ -94,6 +115,11 @@ const Navbar: React.FC = () => {
     if (idLigaMatch) info["ID Liga"] = idLigaMatch[1];
   
     return info;
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/iniciar");
   };
   
 
@@ -221,9 +247,25 @@ const Navbar: React.FC = () => {
             </a>
 
 
-            <a href="/cuenta" className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
-              <FaUser /> <span>INICIAR</span>
-            </a>
+            {/* Usuario autenticado o botón INICIAR */}
+            {user ? (
+              <div className="flex items-center gap-3 bg-[#EAEAEA] py-2 px-4 rounded-md text-[#1D1B20] font-bold">
+                <FaUser className="text-[#8400FF]" />
+                <span className="text-sm sm:text-base">{user.email}</span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 text-[#8400FF] hover:text-[#1D1B20] transition-colors text-sm font-medium ml-2"
+                  title="Cerrar sesión"
+                >
+                  <FaSignOutAlt />
+                  <span className="hidden sm:inline">Cerrar sesión</span>
+                </button>
+              </div>
+            ) : (
+              <a href="/iniciar" className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
+                <FaUser /> <span>INICIAR</span>
+              </a>
+            )}
 
             {/* Cog and Theme Menu */}
             <div className="relative">
@@ -358,10 +400,22 @@ const Navbar: React.FC = () => {
             <span className="text-xs mt-1">Buscar</span>
           </button>
           
-          <a href="/cuenta" className="flex flex-col items-center justify-center">
-            <FaUser className="text-xl" />
-            <span className="text-xs mt-1">Perfil</span>
-          </a>
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="flex flex-col items-center justify-center"
+              title="Cerrar sesión"
+            >
+              <FaUser className="text-xl" />
+              <span className="text-xs mt-1">{user.email.split("@")[0]}</span>
+              <span className="text-[10px] text-[#8400FF]">Salir</span>
+            </button>
+          ) : (
+            <a href="/cuenta" className="flex flex-col items-center justify-center">
+              <FaUser className="text-xl" />
+              <span className="text-xs mt-1">Perfil</span>
+            </a>
+          )}
         </div>
       </div>
       

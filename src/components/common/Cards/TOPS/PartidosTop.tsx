@@ -1,66 +1,145 @@
 import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const partidos = [
-  {
-    id: 1,
-    local: {
-      nombre: "REAL MADRID",
-      logo: "https://static0.givemesportimages.com/wordpress/wp-content/uploads/2024/08/real-madrid-logo-resized.png",
-    },
-    visitante: {
-      nombre: "MANCHESTER CITY",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/1200px-Manchester_City_FC_badge.svg.png",
-    },
-    fecha: "31/03/2025",
-    cuotas: ["2.15", "4.4", "3.52"],
-  },
-  {
-    id: 2,
-    local: {
-      nombre: "BAYERN MUNICH",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/250px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
-    },
-    visitante: {
-      nombre: "ARSENAL",
-      logo: "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
-    },
-    fecha: "01/04/2025",
-    cuotas: ["1.90", "3.80", "4.20"],
-  },
-  {
-    id: 3,
-    local: {
-      nombre: "INTER DE MILÁN",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/FC_Internazionale_Milano_2021.svg/250px-FC_Internazionale_Milano_2021.svg.png",
-    },
-    visitante: {
-      nombre: "AC MILAN",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg",
-    },
-    fecha: "02/04/2025",
-    cuotas: ["2.00", "3.60", "3.90"],
-  },
-];
+interface Team {
+  name: string;
+  logo: string;
+}
+
+interface Match {
+  homeTeam: Team;
+  awayTeam: Team;
+  time: string;
+  date: string;
+  odds?: {
+    home: string;
+    draw: string;
+    away: string;
+  };
+}
+
+interface League {
+  name: string;
+  logo: string;
+  matches: Match[];
+}
 
 const PartidosTop: React.FC = () => {
+  const [topMatches, setTopMatches] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [indice, setIndice] = useState(0);
 
+  useEffect(() => {
+    const fetchTopMatches = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:3005/api/scraping/run', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Error al cargar los partidos: ${response.status} ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.data && result.data.leagues) {
+          // Obtener todos los partidos de todas las ligas
+          const allMatches: Match[] = [];
+          result.data.leagues.forEach((league: League) => {
+            allMatches.push(...league.matches);
+          });
+
+          // Tomar los primeros 3 partidos y formatearlos para el carrusel
+          const formattedMatches = allMatches.slice(0, 3).map((match, index) => ({
+            id: index + 1,
+            local: {
+              nombre: match.homeTeam.name,
+              logo: match.homeTeam.logo || '/placeholder-team.png'
+            },
+            visitante: {
+              nombre: match.awayTeam.name,
+              logo: match.awayTeam.logo || '/placeholder-team.png'
+            },
+            fecha: match.date,
+            cuotas: match.odds ? [match.odds.home, match.odds.draw, match.odds.away] : ["-", "-", "-"]
+          }));
+
+          setTopMatches(formattedMatches);
+        } else {
+          setError('Los datos no están en el formato esperado');
+        }
+      } catch (err) {
+        console.error('Error al obtener partidos top:', err);
+        setError(err instanceof Error ? err.message : 'Error desconocido');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopMatches();
+  }, []);
+
   const handlePrev = () => {
-    setIndice((prev) => (prev > 0 ? prev - 1 : partidos.length - 1));
+    setIndice((prev) => (prev > 0 ? prev - 1 : topMatches.length - 1));
   };
 
   const handleNext = () => {
-    setIndice((prev) => (prev < partidos.length - 1 ? prev + 1 : 0));
+    setIndice((prev) => (prev < topMatches.length - 1 ? prev + 1 : 0));
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndice((prev) => (prev < partidos.length - 1 ? prev + 1 : 0));
-    }, 6000); // Cambia cada 6 segundos
+    if (topMatches.length > 0) {
+      const interval = setInterval(() => {
+        setIndice((prev) => (prev < topMatches.length - 1 ? prev + 1 : 0));
+      }, 6000); // Cambia cada 6 segundos
 
-    return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [topMatches]);
+
+  if (loading) {
+    return (
+      <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
+        <h2 className="text-[16px] md:text-[18px] font-bold uppercase mb-2 md:mb-4 px-2 md:px-0">
+          PARTIDOS TOP DE LA SEMANA
+        </h2>
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333] text-center">
+          Cargando partidos...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
+        <h2 className="text-[16px] md:text-[18px] font-bold uppercase mb-2 md:mb-4 px-2 md:px-0">
+          PARTIDOS TOP DE LA SEMANA
+        </h2>
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333] text-red-500">
+          Error: {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (topMatches.length === 0) {
+    return (
+      <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
+        <h2 className="text-[16px] md:text-[18px] font-bold uppercase mb-2 md:mb-4 px-2 md:px-0">
+          PARTIDOS TOP DE LA SEMANA
+        </h2>
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333] text-center">
+          No hay partidos top disponibles
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
@@ -80,10 +159,10 @@ const PartidosTop: React.FC = () => {
           <div
             className="flex transition-transform duration-1000 ease-in-out"
             style={{
-              transform: `translateX(-${indice * 100}%)`, // Desliza el contenido hacia la izquierda
+              transform: `translateX(-${indice * 100}%)`,
             }}
           >
-            {partidos.map((partido, index) => (
+            {topMatches.map((partido, index) => (
               <div key={index} className="flex flex-row justify-between items-center px-2 md:px-8 py-4 w-full min-w-full shrink-0">
                 {/* Equipo Local */}
                 <div className="flex flex-col items-center gap-1 md:gap-4 text-center w-1/3 md:w-[250px]">
@@ -91,6 +170,7 @@ const PartidosTop: React.FC = () => {
                     src={partido.local.logo}
                     alt={`${partido.local.nombre} Logo`}
                     className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] md:w-[90px] md:h-[90px] lg:w-[120px] lg:h-[120px] object-contain"
+                    onError={(e) => { e.currentTarget.src = '/placeholder-team.png' }}
                   />
                   <h3 className="text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] uppercase mt-1 truncate w-full">{partido.local.nombre}</h3>
                 </div>
@@ -101,24 +181,8 @@ const PartidosTop: React.FC = () => {
                     {partido.fecha}
                   </div>
 
-                  {/* Etiquetas 1 X 2 */}
-                  <div className="flex justify-center gap-1 md:gap-2 text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] text-black dark:text-white font-semibold mt-1 md:mt-2">
-                    <div className="w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px] text-center">1</div>
-                    <div className="w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px] text-center">X</div>
-                    <div className="w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px] text-center">2</div>
-                  </div>
 
-                  {/* Valores de cuotas */}
-                  <div className="flex gap-1 md:gap-2">
-                    {partido.cuotas.map((cuota, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-[#8400FF] text-white px-1 md:px-3 py-1 text-center rounded-sm text-[8px] sm:text-[10px] md:text-[14px] lg:text-[16px] w-[30px] sm:w-[40px] md:w-[50px] lg:w-[60px]"
-                      >
-                        {cuota}
-                      </div>
-                    ))}
-                  </div>
+
                 </div>
 
                 {/* Equipo Visitante */}
@@ -127,6 +191,7 @@ const PartidosTop: React.FC = () => {
                     src={partido.visitante.logo}
                     alt={`${partido.visitante.nombre} Logo`}
                     className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] md:w-[90px] md:h-[90px] lg:w-[120px] lg:h-[120px] object-contain"
+                    onError={(e) => { e.currentTarget.src = '/placeholder-team.png' }}
                   />
                   <h3 className="text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] uppercase mt-1 truncate w-full">{partido.visitante.nombre}</h3>
                 </div>
@@ -144,7 +209,7 @@ const PartidosTop: React.FC = () => {
         
         {/* Pagination indicators */}
         <div className="flex justify-center mt-2 md:mt-4 gap-1 md:gap-2">
-          {partidos.map((_, idx) => (
+          {topMatches.map((_, idx) => (
             <div 
               key={idx}
               className={`h-1 md:h-2 rounded-full transition-all duration-300 cursor-pointer ${

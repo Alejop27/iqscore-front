@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState } from "react"; 
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Registro = () => {
+  const navigate = useNavigate();
+  const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     // Datos de cuenta
     username: "",
@@ -12,41 +17,124 @@ const Registro = () => {
     // Datos personales
     firstName: "",
     lastName: "",
-    age: "",
+    age: 18,
     country: "",
     state: "",
     city: "",
     birthDate: "",
-    cedula: ""
+    cedula: "",
+    roleName: 'Usuario', // Rol predeterminado
+    registrationDate: today,
+    status: 'active', // Estado predeterminado
+
   });
   const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Clear errors when user starts typing again
+    setError("");
+    setApiError("");
   };
   
-  
   const nextStep = () => {
+    // Validate first step
+    if (!form.username) {
+      setError("El nombre de usuario es obligatorio");
+      return;
+    }
+    
+    if (!form.email) {
+      setError("El email es obligatorio");
+      return;
+    }
+    
+    if (!form.password) {
+      setError("La contraseña es obligatoria");
+      return;
+    }
+    
     if (form.password !== form.confirmPassword) {
       setError("Las contraseñas no coinciden");
       return;
     }
+    
     setError("");
     setStep(2);
   };
 
   const prevStep = () => setStep(1);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (parseInt(form.age) < 18) {
+  
+    // Validate if age is greater than or equal to 18
+    if (form.age < 18) {
       setError("Debes ser mayor de 18 años");
       return;
     }
-    console.log("Formulario enviado:", form);
-    // Aquí iría la lógica para enviar datos
+  
+    // Validate other required fields (can be split into separate functions)
+    if (!form.firstName || !form.lastName || !form.cedula) {
+      setError("Todos los campos son obligatorios");
+      return;
+    }
+  
+    const userData = {
+      username: form.username,
+      email: form.email,
+      password: form.password,
+      confirmPassword: form.confirmPassword, // 👈 añade esto
+      firstName: form.firstName,
+      lastName: form.lastName,
+      age: form.age,
+      country: form.country,
+      state: form.state,
+      city: form.city,
+      birthDate: form.birthDate,
+      cedula: form.cedula,
+      roleName: form.roleName,
+      registrationDate: form.registrationDate,
+      status: form.status,
+    };
+    
+  
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3005/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || "Error al registrarse");
+      }
+      
+      if (data.id) {
+        // ✅ Redirige a la página de pago con el userId en la URL
+        navigate(`/pagar?userId=${data.id}`);
+      } else {
+        throw new Error("No se recibió el userId desde el servidor");
+      }
+      
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError("Ocurrió un error inesperado");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
   
+
   
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">
@@ -159,6 +247,12 @@ const Registro = () => {
                 </div>
               ))}
             </div>
+            
+            {apiError && (
+              <div className="bg-red-500/20 border border-red-500/50 text-red-100 p-3 rounded-lg mb-4">
+                {apiError}
+              </div>
+            )}
             
             <form onSubmit={handleSubmit} className="space-y-4">
               {step === 1 ? (
@@ -338,6 +432,7 @@ const Registro = () => {
                     type="button"
                     onClick={prevStep}
                     className="flex-1 bg-[#1B1D20] border border-[#354AED]/40 text-white py-3 rounded-lg hover:bg-[#1B1D20]/60 transition-all"
+                    disabled={loading}
                   >
                     Atrás
                   </button>
@@ -348,15 +443,22 @@ const Registro = () => {
                     type="button"
                     onClick={nextStep}
                     className="flex-1 bg-[#354AED] text-white py-3 rounded-lg hover:shadow-lg hover:shadow-[#8400FF]/20 transition-all"
+                    disabled={loading}
                   >
                     Siguiente
                   </button>
                 ) : (
                   <button
                     type="submit"
-                    className="flex-1 bg-[#354AED] text-white py-3 rounded-lg hover:shadow-lg hover:shadow-[#8400FF]/20 transition-all"
+                    className="flex-1 bg-[#354AED] text-white py-3 rounded-lg hover:shadow-lg hover:shadow-[#8400FF]/20 transition-all flex justify-center items-center"
+                    disabled={loading}
                   >
-                    Registrarse
+                    {loading ? (
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : "Registrarse"}
                   </button>
                 )}
               </div>

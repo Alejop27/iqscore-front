@@ -4,11 +4,46 @@ import { motion } from "framer-motion";
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [step, setStep] = useState(1); // 1: Email, 2: Verification Code, 3: New Password
+  const [isCodeSent, setIsCodeSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!email.includes("@") || !email.includes(".")) {
+      setError("Por favor ingresa un correo electrónico válido.");
+      return;
+    }
+    
+    setError("");
+    setIsCodeSent(true);
+    console.log("Código enviado a:", email);
+    // Aquí llamarías a tu API para enviar el código de verificación
+    setTimeout(() => {
+      setStep(2);
+    }, 1000);
+  };
+
+  const handleCodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
+      setError("El código debe contener 6 dígitos numéricos.");
+      return;
+    }
+    
+    setError("");
+    console.log("Código verificado:", verificationCode);
+    // Aquí verificarías el código con tu API
+    setStep(3);
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (password.length < 6) {
@@ -24,8 +59,217 @@ const ResetPassword: React.FC = () => {
     setError("");
     console.log("Contraseña cambiada:", password);
     // Aquí llamarías a tu API de cambio de contraseña
-    // Después podrías redirigir al usuario a la página de login
-    // navigate("/login");
+    
+    // Mostrar mensaje de éxito y redireccionar después de 2 segundos
+    setStep(4);
+    setTimeout(() => {
+      navigate("/iniciar");
+    }, 2000);
+  };
+
+  const resendCode = () => {
+    console.log("Reenviando código a:", email);
+    // Aquí llamarías a tu API para reenviar el código
+    setIsCodeSent(true);
+    setTimeout(() => {
+      setIsCodeSent(false);
+    }, 30000); // Deshabilitar reenvío por 30 segundos
+  };
+
+  const renderStepTitle = () => {
+    switch (step) {
+      case 1:
+        return "Restablece tu contraseña";
+      case 2:
+        return "Verifica tu identidad";
+      case 3:
+        return "Crea nueva contraseña";
+      case 4:
+        return "¡Contraseña actualizada!";
+      default:
+        return "Restablece tu contraseña";
+    }
+  };
+
+  const renderStepDescription = () => {
+    switch (step) {
+      case 1:
+        return "Ingresa tu correo electrónico para recibir un código de verificación.";
+      case 2:
+        return "Hemos enviado un código de 6 dígitos a tu correo. Introdúcelo a continuación.";
+      case 3:
+        return "Ahora puedes crear tu nueva contraseña segura.";
+      case 4:
+        return "Tu contraseña ha sido actualizada correctamente. Redirigiendo al inicio de sesión...";
+      default:
+        return "";
+    }
+  };
+
+  const renderStepIndicator = () => {
+    return (
+      <div className="flex items-center justify-center mb-6 space-x-2">
+        {[1, 2, 3].map((s) => (
+          <div 
+            key={s}
+            className={`w-8 h-2 rounded-full transition-all ${
+              s === step ? "bg-[#354AED]" : 
+              s < step ? "bg-[#8400FF]/70" : "bg-white/20"
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const renderForm = () => {
+    switch (step) {
+      case 1:
+        return (
+          <form onSubmit={handleEmailSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm text-white/70 mb-2">Correo Electrónico</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
+                placeholder="usuario@ejemplo.com"
+                required
+              />
+            </div>
+            
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+            
+            <button
+              type="submit"
+              className="w-full bg-[#354AED] text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50"
+            >
+              Enviar Código
+            </button>
+          </form>
+        );
+      
+      case 2:
+        return (
+          <form onSubmit={handleCodeSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm text-white/70 mb-2">Código de Verificación</label>
+              <div className="flex justify-center">
+                <input
+                  type="text"
+                  value={verificationCode}
+                  onChange={(e) => {
+                    // Solo permitir números y máximo 6 caracteres
+                    const onlyNums = e.target.value.replace(/[^0-9]/g, '');
+                    if (onlyNums.length <= 6) {
+                      setVerificationCode(onlyNums);
+                    }
+                  }}
+                  className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white text-center tracking-widest text-xl placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
+                  placeholder="······"
+                  maxLength={6}
+                  required
+                />
+              </div>
+              <p className="text-white/50 text-xs mt-2 text-center">
+                Enviado a {email.substring(0, 3)}...{email.substring(email.indexOf('@'))}
+              </p>
+            </div>
+            
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+            
+            <button
+              type="submit"
+              className="w-full bg-[#354AED] text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50"
+            >
+              Verificar Código
+            </button>
+            
+            <p className="text-center text-white/60 text-sm">
+              ¿No recibiste el código?{" "}
+              <button
+                type="button"
+                onClick={resendCode}
+                disabled={isCodeSent}
+                className={`${
+                  isCodeSent 
+                    ? "text-white/30" 
+                    : "text-[#8400FF] hover:text-[#354AED]"
+                } transition-colors font-medium`}
+              >
+                {isCodeSent ? "Código enviado" : "Reenviar"}
+              </button>
+            </p>
+          </form>
+        );
+      
+      case 3:
+        return (
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm text-white/70 mb-2">Nueva Contraseña</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm text-white/70 mb-2">Confirmar Contraseña</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+            
+            <button
+              type="submit"
+              className="w-full bg-[#354AED] text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50"
+            >
+              Actualizar Contraseña
+            </button>
+          </form>
+        );
+      
+      case 4:
+        return (
+          <div className="text-center py-6">
+            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-white text-lg">¡Contraseña actualizada con éxito!</p>
+            <p className="text-white/60 text-sm">Redirigiendo al inicio de sesión...</p>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
   };
 
   return (
@@ -47,7 +291,7 @@ const ResetPassword: React.FC = () => {
         <div className="absolute -top-10 -left-10 w-96 h-96 bg-[#354AED] opacity-20 rounded-full filter blur-3xl"></div>
         <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-[#8400FF] opacity-20 rounded-full filter blur-3xl"></div>
       </div>
-
+      
       {/* Panel izquierdo - Contenido de fútbol */}
       <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center items-center relative z-10">
         <motion.div
@@ -66,7 +310,7 @@ const ResetPassword: React.FC = () => {
             <h1 className="text-5xl font-bold text-white mb-2 tracking-tight">IQScore</h1>
             <p className="text-xl text-white/70">Análisis Predictivo de Fútbol</p>
           </div>
-
+          
           {/* Características */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="bg-[#1B1D20]/80 backdrop-blur-lg p-5 rounded-xl border border-[#354AED]/20 hover:border-[#354AED]/40 transition-all">
@@ -111,7 +355,7 @@ const ResetPassword: React.FC = () => {
           </div>
         </motion.div>
       </div>
-
+      
       {/* Panel derecho - Formulario de reseteo de contraseña */}
       <div className="w-full md:w-1/2 p-8 flex items-center justify-center relative z-10">
         <motion.div 
@@ -125,47 +369,14 @@ const ResetPassword: React.FC = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#354AED] opacity-10 rounded-full filter blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#8400FF] opacity-10 rounded-full filter blur-3xl"></div>
             
-            <h2 className="text-2xl font-bold text-white mb-2">Restablecer Contraseña</h2>
-            <p className="text-white/60 mb-6">Ingresa tu nueva contraseña para actualizar tu cuenta.</p>
+            {renderStepIndicator()}
             
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm text-white/70 mb-2">Nueva Contraseña</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm text-white/70 mb-2">Confirmar Contraseña</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-              
-              {error && (
-                <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">
-                  {error}
-                </div>
-              )}
-              
-              <button
-                type="submit"
-                className="w-full bg-[#354AED] text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50"
-              >
-                Restablecer Contraseña
-              </button>
-              
+            <h2 className="text-2xl font-bold text-white mb-2">{renderStepTitle()}</h2>
+            <p className="text-white/60 mb-6">{renderStepDescription()}</p>
+            
+            {renderForm()}
+            
+            {step < 4 && (
               <p className="text-center text-white/60 text-sm mt-6">
                 <button
                   type="button"
@@ -175,9 +386,9 @@ const ResetPassword: React.FC = () => {
                   Volver al inicio de sesión
                 </button>
               </p>
-            </form>
+            )}
           </div>
-
+          
           {/* Emblema de ligas */}
           <div className="flex justify-center space-x-4 mt-6">
             <div className="w-8 h-8 bg-white/10 rounded-full"></div>
@@ -188,7 +399,7 @@ const ResetPassword: React.FC = () => {
           </div>
         </motion.div>
       </div>
-
+      
       {/* Pelota animada */}
       <motion.div
         className="absolute z-10"
