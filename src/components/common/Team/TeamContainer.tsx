@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import InfoTeam from "./InfoTeam";
+import { MYSQL_URI } from "../../../config/config";
 
 interface TeamData {
   nombre_equipo: string;
@@ -34,7 +35,7 @@ const TeamContainer: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://localhost:3001/api/equipo/${teamId}`);
+        const response = await fetch(`${MYSQL_URI}/api/equipo/${teamId}`);
         if (!response.ok) {
           throw new Error(`Failed to load team. Status: ${response.status}`);
         }

@@ -102,7 +102,7 @@ const Registro = () => {
   
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3005/api/register', {
+      const response = await fetch('http://20.186.89.158:3005/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

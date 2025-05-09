@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { MYSQL_URI } from '../../../config/config'; // Import MYSQL_URI from config
 
 // Define an interface for the team data
 interface Team {
@@ -29,7 +30,7 @@ const AllTeams: React.FC = () => {
     const fetchLeagues = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/ligas`);
+        const response = await fetch(`${MYSQL_URI}/api/ligas`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -56,7 +57,7 @@ const AllTeams: React.FC = () => {
     const fetchTeams = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/liga/equipos/${selectedLeague}`);
+        const response = await fetch(`${MYSQL_URI}/api/liga/equipos/${selectedLeague}`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

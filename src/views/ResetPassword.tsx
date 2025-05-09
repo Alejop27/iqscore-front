@@ -11,6 +11,8 @@ const ResetPassword: React.FC = () => {
   const [error, setError] = useState("");
   const [step, setStep] = useState(1); // 1: Email, 2: Verification Code, 3: New Password
   const [isCodeSent, setIsCodeSent] = useState(false);
+  const [cedula, setCedula] = useState("");
+
 
   const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -138,6 +140,23 @@ const ResetPassword: React.FC = () => {
                 required
               />
             </div>
+
+            <div>
+              <label className="block text-sm text-white/70 mb-2">Cédula</label>
+              <input
+                type="text"
+                value={cedula}
+                onChange={(e) => {
+                  // Solo permitir números
+                  const onlyNums = e.target.value.replace(/[^0-9]/g, '');
+                  setCedula(onlyNums);
+                }}
+                className="w-full bg-[#1B1D20] border border-[#354AED]/40 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#8400FF] transition-all"
+                placeholder="CC"
+                required
+              />
+            </div>
+
             
             {error && (
               <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">

@@ -1,6 +1,7 @@
   import React, { useEffect, useState } from "react";
   import { FaHeart, FaRegHeart } from "react-icons/fa";
   import { useNavigate } from "react-router-dom";
+  import { MYSQL_URI } from '../../../config/config';
 
   interface Liga {
     idLiga: number;
@@ -17,18 +18,25 @@
     useEffect(() => {
       const fetchLigas = async () => {
         try {
-          const response = await fetch("http://localhost:3001/api/ligas");
+          const response = await fetch(`${MYSQL_URI}/api/ligas`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
           const data = await response.json();
           setLigas(data);
         } catch (error) {
           console.error("Error al cargar ligas:", error);
+          // Opcional: manejar el estado de error en tu UI
+          // setError('No se pudieron cargar las ligas');
         } finally {
           setLoading(false);
         }
       };
-
+    
       fetchLigas();
-    }, []);
+    }, [MYSQL_URI]); // Agregamos MONGO_URI como dependencia
 
     const toggleFavorite = (idLiga: number, e: React.MouseEvent) => {
       e.stopPropagation(); // Prevents navigation when clicking the heart

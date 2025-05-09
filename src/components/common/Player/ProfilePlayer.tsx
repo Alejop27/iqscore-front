@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MYSQL_URI } from '../../../config/config';
 
 interface Player {
   nombre: string;
@@ -18,7 +19,7 @@ const PlayerProfile: React.FC = () => {
   useEffect(() => {
     const fetchJugador = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/jugadores/${playerId}`);
+        const response = await fetch(`${MYSQL_URI}/api/jugadores/${playerId}`);
         const data = await response.json();
         setJugador(data);
       } catch (error) {

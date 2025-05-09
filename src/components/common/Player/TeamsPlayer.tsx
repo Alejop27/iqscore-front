@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MYSQL_URI } from '../../../config/config';
 
 interface ClubHistorial {
   idJugador: number;
@@ -17,7 +18,7 @@ const PlayerTrajectory: React.FC = () => {
   useEffect(() => {
     const fetchHistorial = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/jugadordetalles/${playerId}/historial`);
+        const response = await fetch(`${MYSQL_URI}/api/jugadordetalles/${playerId}/historial`);
         const data = await response.json();
         setHistorial(Array.isArray(data) ? data : [data]);
       } catch (error) {

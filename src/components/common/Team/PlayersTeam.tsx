@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { MYSQL_URI } from "../../../config/config"; // Import MYSQL_URI from config
 
 
 interface Player {
@@ -37,7 +38,7 @@ const PlayerTeam: React.FC<PlayersTeamProps> =  ({ idEquipo })  => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:3001/api/equipo/jugadores/${idEquipo}`);
+        const response = await fetch(`${MYSQL_URI}/api/equipo/jugadores/${idEquipo}`);
         if (!response.ok) {
           throw new Error("Error fetching players");
         }

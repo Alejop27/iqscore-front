@@ -43,14 +43,17 @@ const ChatIA: React.FC = () => {
         >
           {/* Botones de redirección */}
           <div className="flex flex-col gap-2 p-4 border-t border-gray-300">
-            <ButtonRedirect to="/pagina1">Ir a Página 1</ButtonRedirect>
-            <ButtonRedirect to="/pagina2">Ir a Página 2</ButtonRedirect>
-            <ButtonRedirect to="/pagina3">Ir a Página 3</ButtonRedirect>
+            <ButtonRedirect to="https://drive.google.com/drive/folders/1STriAXHdyfbfyPmL0DT4bn7S63WSMmVm?usp=sharing "  hoverClass="bg-[#6d00cc]">Drive</ButtonRedirect>
+            <ButtonRedirect to="http://98.81.211.250:8501/" hoverClass="bg-[#6d00cc]">Chat IA 1</ButtonRedirect>
+            <ButtonRedirect to="http://54.163.197.215:8501"  hoverClass="bg-[#6d00cc]">Chat IA 2</ButtonRedirect>
+          </div>
+          <div>
+
           </div>
         </div>
       )}
     </div>
   );
-};
+};//bg-[#ff6347]
 
 export default ChatIA;
