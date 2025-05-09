@@ -248,24 +248,26 @@ const Navbar: React.FC = () => {
 
 
             {/* Usuario autenticado o botón INICIAR */}
-            {user ? (
-              <div className="flex items-center gap-3 bg-[#EAEAEA] py-2 px-4 rounded-md text-[#1D1B20] font-bold">
-                <FaUser className="text-[#8400FF]" />
-                <span className="text-sm sm:text-base">{user.email}</span>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-1 text-[#8400FF] hover:text-[#1D1B20] transition-colors text-sm font-medium ml-2"
-                  title="Cerrar sesión"
-                >
-                  <FaSignOutAlt />
-                  <span className="hidden sm:inline">Cerrar sesión</span>
-                </button>
-              </div>
-            ) : (
-              <a href="/iniciar" className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
-                <FaUser /> <span>INICIAR</span>
-              </a>
-            )}
+
+{user ? (
+  <div className="flex items-center gap-3">
+    <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold">
+      {user.email.charAt(0).toUpperCase()}
+    </div>
+    <button
+      onClick={handleLogout}
+      className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors text-sm font-medium"
+      title="Cerrar sesión"
+    >
+      <FaSignOutAlt />
+    </button>
+  </div>
+) : (
+  <a href="/iniciar" className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
+    <FaUser /> <span>INICIAR</span>
+  </a>
+)}
+
 
             {/* Cog and Theme Menu */}
             <div className="relative">
@@ -400,22 +402,23 @@ const Navbar: React.FC = () => {
             <span className="text-xs mt-1">Buscar</span>
           </button>
           
-          {user ? (
-            <button
-              onClick={handleLogout}
-              className="flex flex-col items-center justify-center"
-              title="Cerrar sesión"
-            >
-              <FaUser className="text-xl" />
-              <span className="text-xs mt-1">{user.email.split("@")[0]}</span>
-              <span className="text-[10px] text-[#8400FF]">Salir</span>
-            </button>
-          ) : (
-            <a href="/cuenta" className="flex flex-col items-center justify-center">
-              <FaUser className="text-xl" />
-              <span className="text-xs mt-1">Perfil</span>
-            </a>
-          )}
+{user ? (
+  <button
+    onClick={handleLogout}
+    className="flex flex-col items-center justify-center"
+    title="Cerrar sesión"
+  >
+    <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold mb-1">
+      {user.email.charAt(0).toUpperCase()}
+    </div>
+    <span className="text-[10px] text-[#8400FF]">Salir</span>
+  </button>
+) : (
+  <a href="/cuenta" className="flex flex-col items-center justify-center">
+    <FaUser className="text-xl" />
+    <span className="text-xs mt-1">Perfil</span>
+  </a>
+)}
         </div>
       </div>
       

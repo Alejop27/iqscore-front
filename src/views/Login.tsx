@@ -26,7 +26,7 @@ const Login: React.FC = () => {
   
   
     try {
-      const response = await fetch("https://obvious-enhance-libs-ranks.trycloudflare.com/api/login", {
+      const response = await fetch("http://172.183.115.127:3005/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +75,7 @@ const Login: React.FC = () => {
 
   const handleGoogleSuccess = async (response: CredentialResponse) => {
     try {
-      const res = await fetch("https://obvious-enhance-libs-ranks.trycloudflare.com/api/auth/google-login", {
+      const res = await fetch("http://172.183.115.127:3005/api/auth/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
