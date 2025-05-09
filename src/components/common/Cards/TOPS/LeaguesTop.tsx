@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { MYSQL_URI } from "../../../../config/config";
 
 interface Liga {
   idLiga: number;
@@ -15,7 +16,7 @@ const LeagueTops: React.FC = () => {
   useEffect(() => {
     const fetchLigas = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/ligas");
+        const response = await fetch(`${MYSQL_URI}/api/ligas`);
         const data = await response.json();
         setLigas(data.slice(0, 5)); // Solo las primeras 5 ligas
       } catch (error) {

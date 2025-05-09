@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MYSQL_URI } from "../../../../config/config";
 
 
 interface PosicionEquipo {
@@ -25,7 +26,7 @@ const ligaId = Number(idLiga);
   useEffect(() => {
     const fetchTabla = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/posiciones_liga/liga/${ligaId}`);
+        const response = await fetch(`${MYSQL_URI}/api/posiciones_liga/liga/${ligaId}`);
         const data = await response.json();
         setTablaData(data);
       } catch (error) {

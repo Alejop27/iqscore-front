@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MYSQL_URI } from "../../../../config/config";
 
 interface Assistant {
   idJugador: number;
@@ -19,7 +20,7 @@ const TopAssistant: React.FC = () => {
 
     const fetchAssistants = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/liga/jugadores/mas-asistencias/${idLiga}`);
+        const response = await fetch(`${MYSQL_URI}/api/liga/jugadores/mas-asistencias/${idLiga}`);
         const data = await response.json();
         setAssistants(data);
       } catch (error) {

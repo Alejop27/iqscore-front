@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MYSQL_URI } from "../../../../config/config";
 
 interface LigaInfoType {
   idLiga: number;
@@ -22,7 +23,7 @@ const LeagueInfo: React.FC = () => {
   useEffect(() => {
     const fetchLiga = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/liga/${ligaId}`);
+        const response = await fetch(`${MYSQL_URI}/api/liga/${ligaId}`);
         const data = await response.json();
         setLiga(data[0]);
       } catch (error) {

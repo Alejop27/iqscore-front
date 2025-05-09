@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MYSQL_URI } from '../../../config/config';
 
 interface PosicionEquipo {
   idPosicion: number;
@@ -27,14 +28,14 @@ const TablaPositionsTeam: React.FC = () => {
 
         const idEquipo = parseInt(teamId, 10);
 
-        const respLiga = await fetch(`http://localhost:3001/api/posiciones_liga/equipo/${idEquipo}`);
+        const respLiga = await fetch(`${MYSQL_URI}/api/posiciones_liga/equipo/${idEquipo}`);
         if (!respLiga.ok) throw new Error("No se pudo obtener el idLiga");
         const dataLiga = await respLiga.json();
         const idLiga = dataLiga?.idLiga;
 
         if (!idLiga) throw new Error("idLiga no encontrado en la respuesta");
 
-        const respTabla = await fetch(`http://localhost:3001/api/posiciones_liga/liga/${idLiga}`);
+        const respTabla = await fetch(`${MYSQL_URI}/api/posiciones_liga/liga/${idLiga}`);
         if (!respTabla.ok) throw new Error("No se pudo obtener la tabla de posiciones");
         const dataTabla = await respTabla.json();
         setTablaData(dataTabla);

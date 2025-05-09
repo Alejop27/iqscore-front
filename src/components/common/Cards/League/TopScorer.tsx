@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MYSQL_URI } from '../../../../config/config';
 
 interface Scorer {
   idJugador: number;
@@ -19,7 +20,7 @@ const TopScorers: React.FC = () => {
 
     const fetchScorers = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/liga/jugadores/mas-goles/${idLiga}`);
+        const response = await fetch(`${MYSQL_URI}/api/liga/jugadores/mas-goles/${idLiga}`);
         const data = await response.json();
         setScorers(data);
       } catch (error) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MYSQL_URI } from "../../../../config/config";
 
 interface Team {
   idEquipo: number;
@@ -15,7 +16,7 @@ const BetplayPositions: React.FC = () => {
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/liga/posiciones/13");
+        const res = await fetch(`${MYSQL_URI}/api/liga/posiciones/13`);
         const data = await res.json();
 
         const processed = data.map((team: any) => ({
