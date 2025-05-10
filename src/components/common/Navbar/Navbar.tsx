@@ -242,8 +242,8 @@ const Navbar: React.FC = () => {
             <a href="/Teams" className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm">
               EQUIPOS
             </a>
-            <a href="/favoritos" className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm">
-              FAVORITOS
+            <a href="/Cuotas" className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm">
+              CUOTAS
             </a>
 
 

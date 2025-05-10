@@ -1,20 +1,24 @@
+import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import ProtectedRoute from '../components/ProtectedRoute'
-import Home from '../views/Home'
-import Team from '../views/Team'
-import League from '../views/League'
-import Leagues from '../views/Leagues'
-import Teams from '../views/Teams'
-import Game from '../views/Game'
-import Player from '../views/Player'
-import AboutUs from '../views/About'
-import Registro from '../views/Registro'
-import Iniciar from '../views/Login'
-import Account from '../views/Account'
-import ResetPassword from '../views/ResetPassword'
-import NotFound from '../views/404'
-import Favorites from '../views/Favorites'
-import PaymentGateway from '../components/common/Account/PaymentGateway'
+
+
+// Importación dinámica de los componentes
+const Home = React.lazy(() => import('../views/Home'))
+const Team = React.lazy(() => import('../views/Team'))
+const League = React.lazy(() => import('../views/League'))
+const Leagues = React.lazy(() => import('../views/Leagues'))
+const Teams = React.lazy(() => import('../views/Teams'))
+const Game = React.lazy(() => import('../views/Game'))
+const Player = React.lazy(() => import('../views/Player'))
+const AboutUs = React.lazy(() => import('../views/About'))
+const Registro = React.lazy(() => import('../views/Registro'))
+const Iniciar = React.lazy(() => import('../views/Login'))
+const Account = React.lazy(() => import('../views/Account'))
+const ResetPassword = React.lazy(() => import('../views/ResetPassword'))
+const NotFound = React.lazy(() => import('../views/404'))
+const Cuotas = React.lazy(() => import('../views/Cuotas'))
+const PaymentGateway = React.lazy(() => import('../components/common/Account/PaymentGateway'))
 
 export const router = createBrowserRouter([
     // Rutas públicas
@@ -109,10 +113,10 @@ export const router = createBrowserRouter([
         )
     },
     {
-        path: '/favoritos',
+        path: '/cuotas',
         element: (
             <ProtectedRoute>
-                <Favorites />
+                <Cuotas />
             </ProtectedRoute>
         )
     },
