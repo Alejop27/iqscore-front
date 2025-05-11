@@ -16,52 +16,47 @@ const Login: React.FC = () => {
   const [captchaValue, setCaptchaValue] = useState<string | null>(null);
 
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
-    if (!captchaValue) {
-      alert("Por favor, completa el captcha antes de continuar.");
-      return;
-    }
-  
-  
-    try {
-      const response = await fetch("http://172.183.115.127:3005/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailOrUsername,
-          password,
-          rememberMe,
-          captcha: captchaValue,  // 👈 ESTA ES LA CLAVE para que tu backend reciba el captcha
-        }),
-      });
-      
-  
-      const data = await response.json();
-      console.log(data); // 👉 Aquí puedes ver la respuesta completa
-  
-      if (response.ok) {
-        // ✅ Si el login es exitoso, actualiza el contexto y navega a la página principal
-        console.log("Login exitoso");
-        // Extrae el email del usuario de la respuesta
-        const email = data.email || (data.user && data.user.email) || emailOrUsername;
-        if (email) {
-          login({ email }); // Actualiza el contexto de autenticación
-        }
-        navigate("/"); // Cambia esto según la ruta de tu app
-      } else {
-        // 🚨 Muestra un error (puedes mejorarlo con un alert o un mensaje en pantalla)
-        alert(data.message || "Error en el login");
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  // Comentamos la validación del CAPTCHA
+  // if (!captchaValue) {
+  //   alert("Por favor, completa el captcha antes de continuar.");
+  //   return;
+  // }
+
+  try {
+    const response = await fetch("http://54.234.36.48:3005/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        emailOrUsername,
+        password,
+        rememberMe,
+        captcha: captchaValue,  // 👈 Seguimos enviando el valor por si el backend lo requiere
+      }),
+    });
+    
+    const data = await response.json();
+    console.log(data);
+
+    if (response.ok) {
+      console.log("Login exitoso");
+      const email = data.email || (data.user && data.user.email) || emailOrUsername;
+      if (email) {
+        login({ email });
       }
-    } catch (error) {
-      console.error("Error en la petición:", error);
-      alert("Hubo un problema al intentar iniciar sesión.");
+      navigate("/");
+    } else {
+      alert(data.message || "Error en el login");
     }
-  };
-  
+  } catch (error) {
+    console.error("Error en la petición:", error);
+    alert("Hubo un problema al intentar iniciar sesión.");
+  }
+};
   const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com"; // <-- pega aquí tu Client ID de Google
 
   // Función para decodificar JWT y extraer información
@@ -75,7 +70,7 @@ const Login: React.FC = () => {
 
   const handleGoogleSuccess = async (response: CredentialResponse) => {
     try {
-      const res = await fetch("http://172.183.115.127:3005/api/auth/google-login", {
+      const res = await fetch("http://54.234.36.48:3005/api/auth/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

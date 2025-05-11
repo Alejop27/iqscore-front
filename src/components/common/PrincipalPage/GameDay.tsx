@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Interfaces
 interface Team {
@@ -23,60 +24,61 @@ interface League {
 }
 
 export default function PartidosConAPI() {
+  const navigate = useNavigate();
+
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchPartidos = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:3005/api/scraping/run', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
+useEffect(() => {
+  const fetchPartidos = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('https://scrrap-production.up.railway.app/scrape', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-        if (!response.ok) {
-          throw new Error(`Error al cargar los partidos: ${response.status} ${response.statusText}`);
-        }
-
-        const result = await response.json();
-
-        if (result.data && result.data.leagues) {
-          const fixedLeagues = result.data.leagues.map((league: League) => ({
-            ...league,
-            matches: league.matches.map((match: Match) => ({
-              ...match,
-              homeTeam: {
-                ...match.homeTeam,
-                name: fixEncoding(match.homeTeam.name)
-              },
-              awayTeam: {
-                ...match.awayTeam,
-                name: fixEncoding(match.awayTeam.name)
-              }
-            }))
-          }));
-          setLeagues(fixedLeagues);
-        } else if (result.output) {
-          setError('Los datos no están en formato JSON');
-        } else {
-          setLeagues([]);
-        }
-      } catch (err) {
-        console.error('Error detallado al obtener partidos:', err);
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Error desconocido en la conexión');
-        }
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`Error al cargar los partidos: ${response.status} ${response.statusText}`);
       }
-    };
 
-    fetchPartidos();
-  }, []);
+      const result = await response.json();
+
+      // Check for the correct response structure
+      if (result.leagues) {
+        const fixedLeagues = result.leagues.map((league: League) => ({
+          ...league,
+          matches: league.matches.map((match: Match) => ({
+            ...match,
+            homeTeam: {
+              ...match.homeTeam,
+              name: fixEncoding(match.homeTeam.name)
+            },
+            awayTeam: {
+              ...match.awayTeam,
+              name: fixEncoding(match.awayTeam.name)
+            }
+          }))
+        }));
+        setLeagues(fixedLeagues);
+      } else {
+        setLeagues([]);
+      }
+    } catch (err) {
+      console.error('Error detallado al obtener partidos:', err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Error desconocido en la conexión');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPartidos();
+}, []);
 
   const fixEncoding = (text: string): string => {
     return text
@@ -151,10 +153,11 @@ export default function PartidosConAPI() {
 
             <div className="px-4 py-2">
               {league.matches.map((match, matchIndex) => (
-                <div
-                  key={matchIndex}
-                  className="py-4 mb-2 border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200"
-                >
+<div
+  key={matchIndex}
+  className="py-4 mb-2 border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
+  onClick={() => navigate("/game")}
+>
                   <div className="grid grid-cols-3 items-center">
                     {/* Home Team */}
                     <div className="flex items-center justify-start">
