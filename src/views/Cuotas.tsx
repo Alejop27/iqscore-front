@@ -37,7 +37,7 @@ const FullWidthSection = styled.div`
 
 const TwoColumnContainer = styled.div`
   display: grid;
-  grid-template-columns: 42% 58%;
+  grid-template-columns: 50% 50%;
   width: 100%;
   gap: 2rem;
   margin: 30px 0;

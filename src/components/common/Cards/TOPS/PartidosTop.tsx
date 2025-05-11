@@ -3,16 +3,17 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface Team {
   name: string;
-  logo: string;
+  logo?: string;
 }
 
 interface Match {
   homeTeam: Team;
   awayTeam: Team;
-  time: string;
   date: string;
+  time?: string;
   score?: string;
-  status: "not_started" | "live" | "finished";
+  status?: string;
+  currentTime?: string;
 }
 
 const PartidosTop: React.FC = () => {
@@ -21,59 +22,66 @@ const PartidosTop: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [indice, setIndice] = useState(0);
 
-  useEffect(() => {
-    const fetchTopMatches = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:3005/api/scraping/run', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error al cargar los partidos: ${response.status} ${response.statusText}`);
+useEffect(() => {
+  const fetchTopMatches = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('https://scrrap-production.up.railway.app/scrape', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
         }
+      });
 
-        const result = await response.json();
-
-        if (result.data && result.data.leagues) {
-          const allMatches: Match[] = [];
-          result.data.leagues.forEach((league: any) => {
-            allMatches.push(...league.matches);
-          });
-
-          const formattedMatches = allMatches.slice(0, 3).map((match, index) => ({
-            id: index + 1,
-            local: {
-              nombre: match.homeTeam.name,
-              logo: match.homeTeam.logo || '/placeholder-team.png'
-            },
-            visitante: {
-              nombre: match.awayTeam.name,
-              logo: match.awayTeam.logo || '/placeholder-team.png'
-            },
-            fecha: match.date,
-            hora: match.time,
-            score: match.score || "",
-            status: match.status || "not_started"
-          }));
-
-          setTopMatches(formattedMatches);
-        } else {
-          setError('Los datos no están en el formato esperado');
-        }
-      } catch (err) {
-        console.error('Error al obtener partidos top:', err);
-        setError(err instanceof Error ? err.message : 'Error desconocido');
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`Error al cargar los partidos: ${response.status} ${response.statusText}`);
       }
-    };
 
-    fetchTopMatches();
-  }, []);
+      const result = await response.json();
+
+      if (result.leagues) {
+        // Filtrar solo la liga colombiana
+        const colombianLeague = result.leagues.find(
+          (league: any) => league.name === "Apertura Colombia"
+        );
+
+        if (!colombianLeague || !colombianLeague.matches) {
+          setError("No se encontraron partidos de la Liga Colombiana.");
+          return;
+        }
+
+const formattedMatches = (colombianLeague.matches as Match[]).slice(0, 3).map((match: Match, index: number) => ({
+          id: index + 1,
+          local: {
+            nombre: match.homeTeam.name,
+            logo: match.homeTeam.logo || '/placeholder-team.png'
+          },
+          visitante: {
+            nombre: match.awayTeam.name,
+            logo: match.awayTeam.logo || '/placeholder-team.png'
+          },
+          fecha: match.date,
+          hora: match.time || "00:00",
+          score: match.score || "",
+          status: match.status || "scheduled",
+          currentTime: match.currentTime || ""
+        }));
+
+        setTopMatches(formattedMatches);
+      } else {
+        setError('Los datos no están en el formato esperado');
+      }
+    } catch (err) {
+      console.error('Error al obtener partidos top:', err);
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTopMatches();
+}, []);
+
 
   const handlePrev = () => {
     setIndice((prev) => (prev > 0 ? prev - 1 : topMatches.length - 1));
@@ -106,11 +114,15 @@ const PartidosTop: React.FC = () => {
     );
   }
 
-  const renderEstado = (status: string, hora: string) => {
+  const renderEstado = (status: string, hora: string, currentTime?: string) => {
     switch (status) {
-      case "live": return <span className="text-red-500 font-semibold">EN VIVO</span>;
-      case "finished": return <span className="text-gray-500 font-semibold">FINALIZADO</span>;
-      case "not_started": default: return <span className="text-white font-semibold">{hora}</span>;
+      case "live": 
+        return <span className="text-red-500 font-semibold">{currentTime || "EN VIVO"}</span>;
+      case "finished": 
+        return <span className="text-gray-500 font-semibold">FINALIZADO</span>;
+      case "scheduled": 
+      default: 
+        return <span className="text-black dark:text-white font-semibold">{hora}</span>;
     }
   };
 
@@ -152,7 +164,7 @@ const PartidosTop: React.FC = () => {
                 {/* Centro */}
                 <div className="flex flex-col items-center gap-1 w-1/3 text-center">
                   <div className="text-[10px] md:text-[12px]">
-                    {renderEstado(partido.status, partido.hora)}
+                    {renderEstado(partido.status, partido.hora, partido.currentTime)}
                   </div>
                   {partido.score && (
                     <div className="text-[14px] md:text-[18px] font-bold">
