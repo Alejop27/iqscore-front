@@ -6,6 +6,8 @@ import AllTeams from '../components/common/All/AllTeams';
 import PartidosDelDia from '../components/common/PrincipalPage/GameDay';
 import AD1 from '../components/common/Cards/ADS/Ad1';
 import Ad3 from '../components/common/Cards/ADS/Ad3';
+import TopScorersCard from '../components/common/Cards/GoalsYear/Goals';
+
 
 // Breakpoints for media queries
 const breakpoints = {
@@ -86,6 +88,9 @@ const Teams: React.FC = () => {
             <AllTeams />
           </div>
           <div>
+            <TopScorersCard />
+          </div>
+          <div>
             <PartidosDelDia />
           </div>
         </MobileContainer>
@@ -99,6 +104,9 @@ const Teams: React.FC = () => {
           <LeftColumn>
             <div>
               <AllTeams />
+            </div>
+            <div>
+              <TopScorersCard />
             </div>
             <div>
               <Ad3 />
