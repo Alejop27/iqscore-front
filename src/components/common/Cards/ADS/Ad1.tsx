@@ -1,27 +1,30 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const AdContainer = styled.div`
-  background-color: #1e2124;
-  color: #fff;
-  padding: 20px;
-  width: 850px;
-  height: 30px;
+const AdContainer = styled.a`
+  display: block;
   text-align: center;
+  cursor: pointer;
+  text-decoration: none;
 `;
 
-const AdText = styled.h3`
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.7);
+const AdImage = styled.img`
+  display: block;
+  max-width: 100%;
+  height: auto;
 `;
 
 const AD1: React.FC = () => {
   return (
-    <AdContainer>
-      <AdText>ANUNCIO</AdText>
+    <AdContainer 
+      href="https://online.wplay.co/page?member=livesportcors&campaign=DEFAULT&channel=FS.co_Banner_TOP_ExtraAFFI&zone=66253678&lp=0" 
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <AdImage 
+        src="https://content.livesportmedia.eu/media?name=970x90.jpg%20(666)&type=jpeg&s=1746613341" 
+        alt="Anuncio"
+      />
     </AdContainer>
   );
 };

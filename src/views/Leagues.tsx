@@ -5,8 +5,8 @@ import PartidosTop from '../components/common/Cards/TOPS/PartidosTop';
 import AllLeague from '../components/common/All/AllLeagues';
 import PartidosDelDia from '../components/common/PrincipalPage/GameDay';
 import AD1 from '../components/common/Cards/ADS/Ad1';
-import AD4 from '../components/common/Cards/ADS/Ad4';
-import Ad3 from '../components/common/Cards/ADS/Ad3';
+import LeagueTables from '../components/common/Cards/ODDS/TablaP';
+import TopScorersCard from '../components/common/Cards/GoalsYear/Goals';
 
 // Breakpoints for media queries
 const breakpoints = {
@@ -89,11 +89,11 @@ const Leagues: React.FC = () => {
           <div>
             <AllLeague />
           </div>
+                      <div>
+              <TopScorersCard />
+            </div>
           <div>
             <PartidosDelDia />
-          </div>
-          <div>
-            <Ad3 />
           </div>
         </MobileContainer>
 
@@ -108,22 +108,22 @@ const Leagues: React.FC = () => {
               <AllLeague />
             </div>
             <div>
-              <Ad3 />
+              <PartidosTop />
+            </div>
+            <div>
+              <TopScorersCard />
             </div>
           </LeftColumn>
           
           <RightColumn>
             <div>
-              <PartidosTop />
-            </div>
-            <div>
-              <PartidosDelDia />
+              <LeagueTables />
             </div>
           </RightColumn>
         </TwoColumnContainer>
         
         <FullWidthSection>
-          <AD4 />
+          <AD1 />
         </FullWidthSection>
       </Container>
     </PageWithLayout>

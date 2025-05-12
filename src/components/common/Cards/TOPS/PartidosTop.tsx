@@ -21,67 +21,75 @@ const PartidosTop: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [indice, setIndice] = useState(0);
+  const [leagueName, setLeagueName] = useState("Liga Betplay"); // Default league name
 
-useEffect(() => {
-  const fetchTopMatches = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('https://scrrap-production.up.railway.app/scrape', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+  useEffect(() => {
+    const fetchTopMatches = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://scrrap-production.up.railway.app/scrape', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-      if (!response.ok) {
-        throw new Error(`Error al cargar los partidos: ${response.status} ${response.statusText}`);
-      }
-
-      const result = await response.json();
-
-      if (result.leagues) {
-        // Filtrar solo la liga colombiana
-        const colombianLeague = result.leagues.find(
-          (league: any) => league.name === "Apertura Colombia"
-        );
-
-        if (!colombianLeague || !colombianLeague.matches) {
-          setError("No se encontraron partidos de la Liga Colombiana.");
-          return;
+        if (!response.ok) {
+          throw new Error(`Error al cargar los partidos: ${response.status} ${response.statusText}`);
         }
 
-const formattedMatches = (colombianLeague.matches as Match[]).slice(0, 3).map((match: Match, index: number) => ({
-          id: index + 1,
-          local: {
-            nombre: match.homeTeam.name,
-            logo: match.homeTeam.logo || '/placeholder-team.png'
-          },
-          visitante: {
-            nombre: match.awayTeam.name,
-            logo: match.awayTeam.logo || '/placeholder-team.png'
-          },
-          fecha: match.date,
-          hora: match.time || "00:00",
-          score: match.score || "",
-          status: match.status || "scheduled",
-          currentTime: match.currentTime || ""
-        }));
+        const result = await response.json();
 
-        setTopMatches(formattedMatches);
-      } else {
-        setError('Los datos no están en el formato esperado');
+        if (result.leagues && result.leagues.length > 0) {
+          // Try to find Colombian league first
+          let selectedLeague = result.leagues.find(
+            (league: any) => league.name === "Apertura Colombia" || league.name.includes("Colombia")
+          );
+
+          // If Colombian league not found, use the first available league
+          if (!selectedLeague) {
+            selectedLeague = result.leagues[0];
+            setLeagueName(selectedLeague.name || "Partidos Top"); // Update league name
+          } else {
+            setLeagueName("Liga Betplay"); // Keep Colombian league name
+          }
+
+          if (!selectedLeague || !selectedLeague.matches || selectedLeague.matches.length === 0) {
+            setError("No se encontraron partidos disponibles");
+            return;
+          }
+
+          const formattedMatches = (selectedLeague.matches as Match[]).slice(0, 3).map((match: Match, index: number) => ({
+            id: index + 1,
+            local: {
+              nombre: match.homeTeam.name,
+              logo: match.homeTeam.logo || '/placeholder-team.png'
+            },
+            visitante: {
+              nombre: match.awayTeam.name,
+              logo: match.awayTeam.logo || '/placeholder-team.png'
+            },
+            fecha: match.date,
+            hora: match.time || "00:00",
+            score: match.score || "",
+            status: match.status || "scheduled",
+            currentTime: match.currentTime || ""
+          }));
+
+          setTopMatches(formattedMatches);
+        } else {
+          setError('No se encontraron ligas disponibles');
+        }
+      } catch (err) {
+        console.error('Error al obtener partidos top:', err);
+        setError(err instanceof Error ? err.message : 'Error desconocido');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Error al obtener partidos top:', err);
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchTopMatches();
-}, []);
-
+    fetchTopMatches();
+  }, []);
 
   const handlePrev = () => {
     setIndice((prev) => (prev > 0 ? prev - 1 : topMatches.length - 1));
@@ -101,19 +109,6 @@ const formattedMatches = (colombianLeague.matches as Match[]).slice(0, 3).map((m
     }
   }, [topMatches]);
 
-  if (loading || error || topMatches.length === 0) {
-    return (
-      <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
-        <h2 className="text-[16px] md:text-[18px] font-bold uppercase mb-2 md:mb-4 px-2 md:px-0">
-          PARTIDOS TOP DE LA SEMANA
-        </h2>
-        <div className="bg-white p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333] text-center">
-          {loading ? "Cargando partidos..." : error ? `Error: ${error}` : "No hay partidos top disponibles"}
-        </div>
-      </div>
-    );
-  }
-
   const renderEstado = (status: string, hora: string, currentTime?: string) => {
     switch (status) {
       case "live": 
@@ -126,10 +121,23 @@ const formattedMatches = (colombianLeague.matches as Match[]).slice(0, 3).map((m
     }
   };
 
+  if (loading || error || topMatches.length === 0) {
+    return (
+      <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
+        <h2 className="text-[16px] md:text-[18px] font-bold uppercase mb-2 md:mb-4 px-2 md:px-0">
+          {leagueName.toUpperCase()}
+        </h2>
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333] text-center">
+          {loading ? "Cargando partidos..." : error ? `Error: ${error}` : "No hay partidos disponibles"}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[1240px] mx-auto text-black dark:text-white font-nunito">
       <h2 className="text-[16px] md:text-[18px] font-bold uppercase mb-2 md:mb-4 px-2 md:px-0">
-        PARTIDOS LIGA BETPLAY
+        {leagueName.toUpperCase()}
       </h2>
 
       <div className="relative bg-white p-3 md:p-6 rounded-lg shadow-lg border border-[#ccc] dark:bg-[#1B1D20] dark:border-[#333]">

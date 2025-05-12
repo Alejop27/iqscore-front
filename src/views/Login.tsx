@@ -2,64 +2,75 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha";
-
+import { toast, Toaster } from "sonner"; // Importamos Sonner
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { CredentialResponse } from '@react-oauth/google'; // Import type
-import { useAuth } from "../context/AuthContext"; // Import the auth hook
+import { CredentialResponse } from '@react-oauth/google';
+import { useAuth } from "../context/AuthContext";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Use the auth hook
+  const { login } = useAuth();
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // Estado para manejar carga
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+    try {
+      const response = await fetch("http://54.234.36.48:3005/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailOrUsername,
+          password,
+          rememberMe,
+          captcha: captchaValue,
+        }),
+      });
+      
+      const data = await response.json();
 
-  // Comentamos la validación del CAPTCHA
-  // if (!captchaValue) {
-  //   alert("Por favor, completa el captcha antes de continuar.");
-  //   return;
-  // }
-
-  try {
-    const response = await fetch("http://54.234.36.48:3005/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        emailOrUsername,
-        password,
-        rememberMe,
-        captcha: captchaValue,  // 👈 Seguimos enviando el valor por si el backend lo requiere
-      }),
-    });
-    
-    const data = await response.json();
-    console.log(data);
-
-    if (response.ok) {
-      console.log("Login exitoso");
-      const email = data.email || (data.user && data.user.email) || emailOrUsername;
-      if (email) {
-        login({ email });
+      if (response.ok) {
+        const email = data.email || (data.user && data.user.email) || emailOrUsername;
+        if (email) {
+          login({ email });
+        }
+        toast.success("¡Inicio de sesión exitoso!", {
+          description: "Redirigiendo a la página principal...",
+          duration: 2000,
+          onAutoClose: () => navigate("/"),
+        });
+      } else {
+        toast.error("Error en el login", {
+          description: data.message || "Credenciales incorrectas",
+          action: {
+            label: "Reintentar",
+            onClick: () => {
+              setEmailOrUsername("");
+              setPassword("");
+              setCaptchaValue(null);
+            },
+          },
+        });
       }
-      navigate("/");
-    } else {
-      alert(data.message || "Error en el login");
+    } catch (error) {
+      toast.error("Error de conexión", {
+        description: "Hubo un problema al conectar con el servidor",
+      });
+      console.error("Error en la petición:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error en la petición:", error);
-    alert("Hubo un problema al intentar iniciar sesión.");
-  }
-};
-  const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com"; // <-- pega aquí tu Client ID de Google
+  };
 
-  // Función para decodificar JWT y extraer información
+  const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com";
+
   function parseJwt(token: string) {
     try {
       return JSON.parse(atob(token.split('.')[1]));
@@ -69,44 +80,67 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   }
 
   const handleGoogleSuccess = async (response: CredentialResponse) => {
+    setIsLoading(true);
     try {
       const res = await fetch("http://54.234.36.48:3005/api/auth/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ credential: response.credential }), // 👈 solo esto
+        body: JSON.stringify({ credential: response.credential }),
       });
+      
       const data = await res.json();
+      
       if (res.ok) {
-        // Intenta extraer el email de la respuesta o del token
         let email = data.email || (data.user && data.user.email);
         if (!email && data.token) {
           const payload = parseJwt(data.token);
           email = payload?.email;
         }
-        // Si el backend solo responde con el token de Google, decodifica el JWT:
         if (!email && response.credential) {
           const payload = parseJwt(response.credential);
           email = payload?.email;
         }
         if (email) {
-          login({ email }); // Actualiza el contexto de autenticación
+          login({ email });
         }
-        alert("¡Login con Google exitoso!");
-        navigate("/");
+        toast.success("¡Login con Google exitoso!", {
+          description: "Redirigiendo a la página principal...",
+          duration: 2000,
+          onAutoClose: () => navigate("/"),
+        });
       } else {
-        alert(data.message || "Error en el login con Google");
+        toast.error("Error en Google login", {
+          description: data.message || "No se pudo autenticar con Google",
+        });
       }
     } catch (error) {
       console.error("Error en Google login:", error);
-      alert("Error inesperado en Google login");
+      toast.error("Error inesperado", {
+        description: "Ocurrió un problema al iniciar sesión con Google",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
-  
-
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+
+            <Toaster 
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          style: { background: '#1B1D20', border: '1px solid #1B1D40' },
+          classNames: {
+            title: 'text-white',
+            description: 'text-white/70',
+            actionButton: 'bg-[#354AED] hover:bg-[#354AED]/90',
+            closeButton: 'text-white/50 hover:text-white',
+          },
+        }}
+      />
 
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">
       {/* Efectos de fondo */}
@@ -192,15 +226,15 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       </div>
 
       {/* Panel derecho - Formulario de login */}
-      <div className="w-full md:w-1/2 p-8 flex items-center justify-center relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full max-w-md"
-        >
-          <div className="bg-[#1B1D20]/80 backdrop-blur-xl p-8 rounded-2xl border border-[#354AED]/30 shadow-xl shadow-[#8400FF]/5 relative overflow-hidden">
-            {/* Efectos decorativos */}
+        <div className="w-full md:w-1/2 p-8 flex items-center justify-center relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="w-full max-w-md"
+          >
+
+            <div className="bg-[#1B1D20]/80 backdrop-blur-xl p-8 rounded-2xl border border-[#354AED]/30 shadow-xl shadow-[#8400FF]/5 relative overflow-hidden">            {/* Efectos decorativos */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#354AED] opacity-10 rounded-full filter blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#8400FF] opacity-10 rounded-full filter blur-3xl"></div>
             
@@ -260,9 +294,20 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
               <button
                 type="submit"
-                className="w-full bg-[#354AED]  text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50"
+                className={`w-full ${isLoading ? 'bg-[#354AED]/70' : 'bg-[#354AED]'} text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50 flex items-center justify-center`}
+                disabled={isLoading}
               >
-                Iniciar sesión
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Procesando...
+                  </>
+                ) : (
+                  "Iniciar sesión"
+                )}
               </button>
               
               <div className="relative flex items-center my-6">

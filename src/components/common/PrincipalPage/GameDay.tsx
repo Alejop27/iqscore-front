@@ -156,8 +156,8 @@ useEffect(() => {
 <div
   key={matchIndex}
   className="py-4 mb-2 border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
-  onClick={() => navigate("/game")}
->
+// When navigating to the match details
+onClick={() => navigate("/game", { state: { match } })}>
                   <div className="grid grid-cols-3 items-center">
                     {/* Home Team */}
                     <div className="flex items-center justify-start">

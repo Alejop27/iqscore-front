@@ -26,6 +26,10 @@ export const router = createBrowserRouter([
         path: '/Iniciar',
         element: <Iniciar />
     },
+        {
+        path: '/pagar',
+        element: <PaymentGateway />
+    },
     {
         path: '/Registro',
         element: <Registro />
@@ -120,12 +124,4 @@ export const router = createBrowserRouter([
             </ProtectedRoute>
         )
     },
-    {
-        path: '/pagar',
-        element: (
-            <ProtectedRoute>
-                <PaymentGateway />
-            </ProtectedRoute>
-        )
-    }
 ])

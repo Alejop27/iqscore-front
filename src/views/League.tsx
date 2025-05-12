@@ -4,22 +4,28 @@ import React from 'react';
 import AD1 from '../components/common/Cards/ADS/Ad1';
 import TablePositionsLeague from '../components/common/Cards/League/TablaPositionsLeague';
 import LeagueInfo from '../components/common/Cards/League/LeagueInfo';
-import GamesLeague from '../components/common/Cards/League/GamesLeague';
 import TopScorers from '../components/common/Cards/League/TopScorer';
 import TopAssistant from '../components/common/Cards/League/TopAssistant';
 import TopCards from '../components/common/Cards/League/TopCard';
+import NoticiasRelevo from '../components/common/Cards/TOPS/Noticias';
+
+// Breakpoints for media queries
+const breakpoints = {
+  mobile: '768px',
+};
 
 const Container = styled.div`
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
+  padding: 0 16px;
   margin-top: 100px;
 
-  @media (max-width: 768px) {
-    padding: 0 1rem; /* 16px a los lados en móviles */
+  @media (max-width: ${breakpoints.mobile}) {
+    margin-top: 80px;
+    padding: 0 1rem;
   }
 `;
-
 
 const FullWidthSection = styled.div`
   display: flex;
@@ -27,47 +33,55 @@ const FullWidthSection = styled.div`
   margin: 30px 0;
 `;
 
-const GridLayout = styled.div`
+const TwoColumnContainer = styled.div`
   display: grid;
-  grid-template-areas:
-    "info    table"
-    "games   table"
-    "ads     table"
-    "scorers scorers";
   grid-template-columns: 40% 60%;
+  width: 100%;
   gap: 2rem;
   margin: 30px 0;
-
-  @media (max-width: 768px) {
-    grid-template-areas:
-      "info"
-      "table"
-      "scorers"
-      "games";
+  
+  @media (max-width: ${breakpoints.mobile}) {
     grid-template-columns: 1fr;
   }
 `;
 
-const LeagueInfoWrapper = styled.div`
-  grid-area: info;
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 `;
 
-const TablePositionsWrapper = styled.div`
-  grid-area: table;
-`;
-
-const GamesLeagueWrapper = styled.div`
-  grid-area: games;
+const RightColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 `;
 
 const ThreeColumnWrapper = styled.div`
-  grid-area: scorers;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.mobile}) {
     grid-template-columns: 1fr;
+  }
+`;
+
+const MobileContainer = styled.div`
+  display: none;
+  
+  @media (max-width: ${breakpoints.mobile}) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px 0;
+    width: 100%;
+  }
+  
+  & > div {
+    width: 100%;
   }
 `;
 
@@ -75,30 +89,41 @@ const League: React.FC = () => {
   return (
     <PageWithLayout>
       <Container>
-        <FullWidthSection>
+        {/* Mobile view */}
+        <MobileContainer>
           <AD1 />
-        </FullWidthSection>
-
-        <GridLayout>
-          <LeagueInfoWrapper>
-            <LeagueInfo />
-          </LeagueInfoWrapper>
-
-          <TablePositionsWrapper>
-            <TablePositionsLeague />
-          </TablePositionsWrapper>
-
+          <LeagueInfo />
+          <TablePositionsLeague />
           <ThreeColumnWrapper>
             <TopScorers />
             <TopAssistant />
             <TopCards />
           </ThreeColumnWrapper>
+          <NoticiasRelevo />
+          <AD1 />
+        </MobileContainer>
 
-          <GamesLeagueWrapper>
-            <GamesLeague />
-          </GamesLeagueWrapper>
-        </GridLayout>
-
+        {/* Desktop view */}
+        <FullWidthSection>
+          <AD1 />
+        </FullWidthSection>
+        
+        <TwoColumnContainer>
+          <LeftColumn>
+            <LeagueInfo />
+            <NoticiasRelevo />
+          </LeftColumn>
+          
+          <RightColumn>
+            <TablePositionsLeague />
+            <ThreeColumnWrapper>
+              <TopScorers />
+              <TopAssistant />
+              <TopCards />
+            </ThreeColumnWrapper>
+          </RightColumn>
+        </TwoColumnContainer>
+        
         <FullWidthSection>
           <AD1 />
         </FullWidthSection>
