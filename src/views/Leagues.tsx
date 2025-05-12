@@ -89,9 +89,9 @@ const Leagues: React.FC = () => {
           <div>
             <AllLeague />
           </div>
-                      <div>
-              <TopScorersCard />
-            </div>
+          <div>
+            <TopScorersCard />
+          </div>
           <div>
             <PartidosDelDia />
           </div>
