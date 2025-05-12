@@ -4,9 +4,9 @@ import PageWithLayout from '../components/PageWithLayout';
 import AD1 from '../components/common/Cards/ADS/Ad1';
 import PlayerTeam from '../components/common/Team/PlayersTeam';
 import TablePositions from '../components/common/Team/TablePositionsTeam';
-import TeamGames from '../components/common/Team/TeamGames';
 import TeamContainer from '../components/common/Team/TeamContainer';
 import { useParams } from 'react-router-dom';
+import NoticiasRelevo from '../components/common/Cards/TOPS/Noticias';
 
 const breakpoints = {
   mobile: '768px',
@@ -119,7 +119,7 @@ const Team: React.FC = () => {
             </div>
 
             <div>
-              <TeamGames />
+              <NoticiasRelevo />
             </div>
           </RightColumn>
         </TwoColumnContainer>
@@ -148,7 +148,7 @@ const Team: React.FC = () => {
           </div>
 
           <div>
-            <TeamGames />
+            <NoticiasRelevo />
           </div>
         </MobileContainer>
       </Container>

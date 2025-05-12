@@ -5,7 +5,6 @@ import PartidosTop from '../components/common/Cards/TOPS/PartidosTop';
 import AllTeams from '../components/common/All/AllTeams';
 import PartidosDelDia from '../components/common/PrincipalPage/GameDay';
 import AD1 from '../components/common/Cards/ADS/Ad1';
-import AD4 from '../components/common/Cards/ADS/Ad4';
 import Ad3 from '../components/common/Cards/ADS/Ad3';
 
 // Breakpoints for media queries
@@ -117,7 +116,7 @@ const Teams: React.FC = () => {
         </TwoColumnContainer>
 
         <FullWidthSection>
-          <AD4 />
+          <AD1 />
         </FullWidthSection>
       </Container>
     </PageWithLayout>

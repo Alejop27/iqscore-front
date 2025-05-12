@@ -75,7 +75,7 @@ const Navbar: React.FC = () => {
 
     setLoadingSearch(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/buscar/${encodeURIComponent(search)}`);
+      const response = await fetch(`http://3.92.147.63:3001/api/buscar/${encodeURIComponent(search)}`);
       const data = await response.json();
       
       console.log("Datos recibidos:", data);

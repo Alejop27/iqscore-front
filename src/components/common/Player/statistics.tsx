@@ -67,7 +67,7 @@ const Statistics: React.FC = () => {
     const fetchTitles = async () => {
       try {
         setTitlesLoading(true);
-        const res = await fetch(`http://localhost:3001/api/jugadordetalles/${playerId}/titulos`);
+        const res = await fetch(`${MYSQL_URI}/api/jugadordetalles/${playerId}/titulos`);
         if (!res.ok) throw new Error("Error al obtener los títulos del jugador");
         const data = await res.json();
         setTitles(data);

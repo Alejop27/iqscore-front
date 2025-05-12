@@ -2,11 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import PageWithLayout from '../components/PageWithLayout';
 import PartidosTop from '../components/common/Cards/TOPS/PartidosTop';
-import PartidosDelDia from '../components/common/PrincipalPage/GameDay';
 import AD1 from '../components/common/Cards/ADS/Ad1';
-import AD4 from '../components/common/Cards/ADS/Ad4';
-import Ad3 from '../components/common/Cards/ADS/Ad3';
+import FootballOddsCard from '../components/common/Cards/ODDS/CuotasLiga';
 import AllFavorites from '../components/common/All/AllFavorites';
+import TransfermarktOdds from '../components/common/Cards/ODDS/Transfermarket';
 
 // Breakpoints for media queries
 const breakpoints = {
@@ -89,11 +88,12 @@ const Favorites: React.FC = () => {
             <AllFavorites />
           </div>
           <div>
-            <PartidosDelDia />
+              <TransfermarktOdds />
           </div>
           <div>
-            <Ad3 />
+            <FootballOddsCard />
           </div>
+
         </MobileContainer>
 
         {/* The sections below will be hidden on mobile but visible on larger screens */}
@@ -107,7 +107,7 @@ const Favorites: React.FC = () => {
               <AllFavorites />
             </div>
             <div>
-              <Ad3 />
+              <TransfermarktOdds />
             </div>
           </LeftColumn>
           
@@ -116,13 +116,13 @@ const Favorites: React.FC = () => {
               <PartidosTop />
             </div>
             <div>
-              <PartidosDelDia />
+              <FootballOddsCard />
             </div>
           </RightColumn>
         </TwoColumnContainer>
         
         <FullWidthSection>
-          <AD4 />
+          <AD1 />
         </FullWidthSection>
       </Container>
     </PageWithLayout>

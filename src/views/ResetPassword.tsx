@@ -14,60 +14,103 @@ const ResetPassword: React.FC = () => {
   const [cedula, setCedula] = useState("");
 
 
-  const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    if (!email.includes("@") || !email.includes(".")) {
-      setError("Por favor ingresa un correo electrónico válido.");
-      return;
+const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (!email.includes("@") || !email.includes(".")) {
+    setError("Por favor ingresa un correo electrónico válido.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://54.234.36.48:3005/api/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, cedula }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.detail || "Error al enviar el código");
     }
-    
+
     setError("");
     setIsCodeSent(true);
     console.log("Código enviado a:", email);
-    // Aquí llamarías a tu API para enviar el código de verificación
-    setTimeout(() => {
-      setStep(2);
-    }, 1000);
-  };
+    setTimeout(() => setStep(2), 1000);
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
 
-  const handleCodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
-      setError("El código debe contener 6 dígitos numéricos.");
-      return;
+
+const handleCodeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
+    setError("El código debe contener 6 dígitos numéricos.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://54.234.36.48:3005/api/verify-reset-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, resetToken: verificationCode }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.detail || "Código inválido");
     }
-    
+
     setError("");
     console.log("Código verificado:", verificationCode);
-    // Aquí verificarías el código con tu API
     setStep(3);
-  };
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
 
-  const handlePasswordSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
-      return;
+
+const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (password.length < 6) {
+    setError("La contraseña debe tener al menos 6 caracteres.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError("Las contraseñas no coinciden.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://54.234.36.48:3005/api/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        resetToken: verificationCode,
+        newPassword: password,
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.detail || "Error al cambiar la contraseña");
     }
-    
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-    
+
     setError("");
     console.log("Contraseña cambiada:", password);
-    // Aquí llamarías a tu API de cambio de contraseña
-    
-    // Mostrar mensaje de éxito y redireccionar después de 2 segundos
     setStep(4);
-    setTimeout(() => {
-      navigate("/iniciar");
-    }, 2000);
-  };
+    setTimeout(() => navigate("/iniciar"), 2000);
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
+
 
   const resendCode = () => {
     console.log("Reenviando código a:", email);

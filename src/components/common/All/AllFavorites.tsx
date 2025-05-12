@@ -28,18 +28,38 @@ const Cuotas: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCuotas = async () => {
-      try {
-        // Obtener las cuotas desde la API
-        const response = await fetch("http://54.234.36.48:8000/scrape");
-        const data = await response.json();
-        setLigasCuotas(data);
-      } catch (error) {
-        console.error("Error al cargar cuotas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+const fetchCuotas = async () => {
+  try {
+    const response = await fetch("https://scrapcuo-production.up.railway.app/scrape");
+    const rawData = await response.json();
+
+    // Convertimos el formato de los partidos
+    const transformedLeagues = rawData.leagues.map((liga: any) => ({
+      name: liga.name,
+      matches: liga.matches.map((match: any) => ({
+        time: match.time_str || "", // o match.date_str
+        home_team: match.homeTeam.name,
+        away_team: match.awayTeam.name,
+        odds: {
+          home: match.homeTeam.odds,
+          draw: match.draw_odds,
+          away: match.awayTeam.odds,
+        },
+        match_group_title: match.date_str || "Sin fecha",
+      })),
+    }));
+
+    setLigasCuotas({
+      date_scraped: rawData.scraped_at,
+      leagues: transformedLeagues,
+    });
+  } catch (error) {
+    console.error("Error al cargar cuotas:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     fetchCuotas();
   }, []);
