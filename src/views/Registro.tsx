@@ -365,6 +365,8 @@ const Registro = () => {
                       required
                     />
                   </div>
+                  <label className="block text-xs text-white/70 mb-2">Debe minimo 10 caracteres, una mayuscula, un numero y un caracter especial.</label>
+
                   
                   <div>
                     <label className="block text-sm text-white/70 mb-2">Confirmar contraseña</label>
