@@ -300,7 +300,7 @@ const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.goo
                 
                 <div className="transform scale-90 origin-left">
                   <ReCAPTCHA
-                    sitekey="6LeIJzIrAAAAACcwY43S_9iX_V1biscHsOcDOEvM"
+                    sitekey="656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com"
                     onChange={(value) => {
                       console.log("Captcha value:", value);
                       setCaptchaValue(value);
