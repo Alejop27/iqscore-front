@@ -1,20 +1,20 @@
 import { useState } from "react"; 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { toast, Toaster } from "sonner";
+import { MONGO_URI } from "../config/config";
 
 const Registro = () => {
   const navigate = useNavigate();
-  const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    // Datos de cuenta
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    // Datos personales
     firstName: "",
     lastName: "",
     age: 18,
@@ -23,44 +23,68 @@ const Registro = () => {
     city: "",
     birthDate: "",
     cedula: "",
-    roleName: 'Usuario', // Rol predeterminado
+    roleName: 'Usuario',
     registrationDate: today,
-    status: 'active', // Estado predeterminado
-
+    status: 'active',
   });
-  const [error, setError] = useState("");
-  const [apiError, setApiError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    // Clear errors when user starts typing again
-    setError("");
-    setApiError("");
   };
   
   const nextStep = () => {
-    // Validate first step
     if (!form.username) {
-      setError("El nombre de usuario es obligatorio");
+      toast.error("El nombre de usuario es obligatorio", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        classNames: {
+          title: 'text-white',
+          description: 'text-white/70'
+        }
+      });
       return;
     }
     
     if (!form.email) {
-      setError("El email es obligatorio");
+      toast.error("El email es obligatorio", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
       return;
     }
     
     if (!form.password) {
-      setError("La contraseña es obligatoria");
+      toast.error("La contraseña es obligatoria", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
       return;
     }
     
     if (form.password !== form.confirmPassword) {
-      setError("Las contraseñas no coinciden");
+      toast.error("Las contraseñas no coinciden", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        action: {
+          label: 'Entendido',
+          onClick: () => {}
+        }
+      });
       return;
     }
     
-    setError("");
     setStep(2);
   };
 
@@ -69,15 +93,26 @@ const Registro = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
-    // Validate if age is greater than or equal to 18
     if (form.age < 18) {
-      setError("Debes ser mayor de 18 años");
+      toast.error("Debes ser mayor de 18 años", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
       return;
     }
   
-    // Validate other required fields (can be split into separate functions)
     if (!form.firstName || !form.lastName || !form.cedula) {
-      setError("Todos los campos son obligatorios");
+      toast.error("Todos los campos son obligatorios", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: 'Por favor completa todos los campos del formulario'
+      });
       return;
     }
   
@@ -85,7 +120,7 @@ const Registro = () => {
       username: form.username,
       email: form.email,
       password: form.password,
-      confirmPassword: form.confirmPassword, // 👈 añade esto
+      confirmPassword: form.confirmPassword,
       firstName: form.firstName,
       lastName: form.lastName,
       age: form.age,
@@ -99,46 +134,86 @@ const Registro = () => {
       status: form.status,
     };
     
-  
     try {
       setLoading(true);
-      const response = await fetch('http://54.234.36.48:3005/api/register', {
+      toast.loading("Registrando tu cuenta...", {
+        id: 'register',
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      }); 
+
+      const response = await fetch(`${MONGO_URI}api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(userData)
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Error al registrarse");
       }
       
       if (data.id) {
-        // ✅ Redirige a la página de pago con el userId en la URL
-        navigate(`/pagar?userId=${data.id}`);
+        toast.success("¡Registro exitoso!", {
+          id: 'register',
+          style: {
+            background: '#1B1D20',
+            border: '1px solid #354AED/40',
+            color: 'white'
+          },
+          description: "Redirigiendo a la página de pago...",
+          duration: 2000,
+          onAutoClose: () => navigate(`/pagar?userId=${data.id}`)
+        });
       } else {
         throw new Error("No se recibió el userId desde el servidor");
       }
       
     } catch (error) {
-      if (error instanceof Error) {
-        setApiError(error.message);
-      } else {
-        setApiError("Ocurrió un error inesperado");
-      }
+      toast.error("Error en el registro", {
+        id: 'register',
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: error instanceof Error ? error.message : "Ocurrió un error inesperado",
+        action: {
+          label: 'Reintentar',
+          onClick: () => handleSubmit(e as any)
+        }
+      });
     } finally {
       setLoading(false);
     }
   };
   
-
-  
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">
-      {/* Efectos de fondo */}
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">      {/* Efectos de fondo */}
+            <Toaster 
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          style: { 
+            background: '#1B1D20', 
+            border: '1px solid #354AED/40',
+            color: 'white'
+          },
+          classNames: {
+            title: 'text-white',
+            description: 'text-white/70',
+            actionButton: 'bg-[#354AED] hover:bg-[#354AED]/90',
+            closeButton: 'text-white/50 hover:text-white',
+          },
+        }}
+      />
       <div className="absolute inset-0 overflow-hidden">
         {/* Campo de fútbol estilizado */}
         <div className="absolute inset-0 bg-[#1B1D20]">
@@ -247,12 +322,7 @@ const Registro = () => {
                 </div>
               ))}
             </div>
-            
-            {apiError && (
-              <div className="bg-red-500/20 border border-red-500/50 text-red-100 p-3 rounded-lg mb-4">
-                {apiError}
-              </div>
-            )}
+
             
             <form onSubmit={handleSubmit} className="space-y-4">
               {step === 1 ? (
@@ -424,7 +494,6 @@ const Registro = () => {
                 </>
               )}
               
-              {error && <p className="text-red-500 text-sm">{error}</p>}
               
               <div className="flex space-x-4 pt-4">
                 {step === 2 && (

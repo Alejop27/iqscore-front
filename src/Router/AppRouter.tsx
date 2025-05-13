@@ -84,14 +84,14 @@ export const router = createBrowserRouter([
             </ProtectedRoute>
         )
     },
-    {
-        path: '/game',
-        element: (
-            <ProtectedRoute>
-                <Game />
-            </ProtectedRoute>
-        )
-    },
+{
+  path: '/game',
+  element: (
+    <ProtectedRoute>
+      <Game />
+    </ProtectedRoute>
+  )
+},
     {
         path: '/player/:playerId',
         element: (

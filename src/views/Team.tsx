@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import NoticiasRelevo from '../components/common/Cards/TOPS/Noticias';
 
 const breakpoints = {
-  mobile: '768px',
+  mobile: '1000px',
 };
 
 const Container = styled.div`

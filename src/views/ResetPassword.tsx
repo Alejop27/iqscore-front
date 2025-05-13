@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toast, Toaster } from "sonner";
+import { MONGO_URI } from "../config/config";
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
@@ -8,117 +10,225 @@ const ResetPassword: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [step, setStep] = useState(1); // 1: Email, 2: Verification Code, 3: New Password
+  const [step, setStep] = useState(1);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [cedula, setCedula] = useState("");
 
+  const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-
-  if (!email.includes("@") || !email.includes(".")) {
-    setError("Por favor ingresa un correo electrónico válido.");
-    return;
-  }
-
-  try {
-    const res = await fetch("http://54.234.36.48:3005/api/forgot-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, cedula }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.detail || "Error al enviar el código");
+    if (!email.includes("@") || !email.includes(".")) {
+      toast.error("Por favor ingresa un correo electrónico válido", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
+      return;
     }
 
-    setError("");
-    setIsCodeSent(true);
-    console.log("Código enviado a:", email);
-    setTimeout(() => setStep(2), 1000);
-  } catch (err: any) {
-    setError(err.message);
-  }
-};
+    try {
+      const toastId = toast.loading("Enviando código de verificación...", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
 
+      const res = await fetch(`${MONGO_URI}/api/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, cedula }),
+      });
 
-const handleCodeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || "Error al enviar el código");
+      }
 
-  if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
-    setError("El código debe contener 6 dígitos numéricos.");
-    return;
-  }
+      toast.success("Código enviado con éxito", {
+        id: toastId,
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: "Revisa tu correo electrónico"
+      });
 
-  try {
-    const res = await fetch("http://54.234.36.48:3005/api/verify-reset-token", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, resetToken: verificationCode }),
-    });
+      setIsCodeSent(true);
+      setTimeout(() => setStep(2), 1000);
+    } catch (err: any) {
+      toast.error("Error al enviar el código", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: err.message,
+        action: {
+          label: 'Reintentar',
+          onClick: () => handleEmailSubmit(e)
+        }
+      });
+    }
+  };
 
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.detail || "Código inválido");
+  const handleCodeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
+      toast.error("Código inválido", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: "El código debe contener 6 dígitos numéricos"
+      });
+      return;
     }
 
-    setError("");
-    console.log("Código verificado:", verificationCode);
-    setStep(3);
-  } catch (err: any) {
-    setError(err.message);
-  }
-};
+    try {
+      const toastId = toast.loading("Verificando código...", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
 
+      const res = await fetch(`${MONGO_URI}/api/verify-reset-token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, resetToken: verificationCode }),
+      });
 
-const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || "Código inválido");
+      }
 
-  if (password.length < 6) {
-    setError("La contraseña debe tener al menos 6 caracteres.");
-    return;
-  }
+      toast.success("Código verificado", {
+        id: toastId,
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
 
-  if (password !== confirmPassword) {
-    setError("Las contraseñas no coinciden.");
-    return;
-  }
+      setStep(3);
+    } catch (err: any) {
+      toast.error("Error al verificar el código", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: err.message,
+        action: {
+          label: 'Reintentar',
+          onClick: () => handleCodeSubmit(e)
+        }
+      });
+    }
+  };
 
-  try {
-    const res = await fetch("http://54.234.36.48:3005/api/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        resetToken: verificationCode,
-        newPassword: password,
-      }),
-    });
+  const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.detail || "Error al cambiar la contraseña");
+    if (password.length < 6) {
+      toast.error("Contraseña muy corta", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: "La contraseña debe tener al menos 6 caracteres"
+      });
+      return;
     }
 
-    setError("");
-    console.log("Contraseña cambiada:", password);
-    setStep(4);
-    setTimeout(() => navigate("/iniciar"), 2000);
-  } catch (err: any) {
-    setError(err.message);
-  }
-};
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
+      return;
+    }
 
+    try {
+      const toastId = toast.loading("Actualizando contraseña...", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        }
+      });
+
+      const res = await fetch(`${MONGO_URI}/api/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          resetToken: verificationCode,
+          newPassword: password,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || "Error al cambiar la contraseña");
+      }
+
+      toast.success("Contraseña actualizada", {
+        id: toastId,
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: "Redirigiendo al inicio de sesión..."
+      });
+
+      setStep(4);
+      setTimeout(() => navigate("/iniciar"), 2000);
+    } catch (err: any) {
+      toast.error("Error al actualizar la contraseña", {
+        style: {
+          background: '#1B1D20',
+          border: '1px solid #354AED/40',
+          color: 'white'
+        },
+        description: err.message,
+        action: {
+          label: 'Reintentar',
+          onClick: () => handlePasswordSubmit(e)
+        }
+      });
+    }
+  };
 
   const resendCode = () => {
-    console.log("Reenviando código a:", email);
+    toast.info("Reenviando código de verificación...", {
+      style: {
+        background: '#1B1D20',
+        border: '1px solid #354AED/40',
+        color: 'white'
+      }
+    });
+    
     // Aquí llamarías a tu API para reenviar el código
     setIsCodeSent(true);
     setTimeout(() => {
       setIsCodeSent(false);
-    }, 30000); // Deshabilitar reenvío por 30 segundos
+    }, 30000);
   };
 
   const renderStepTitle = () => {
@@ -201,12 +311,6 @@ const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             </div>
 
             
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-            
             <button
               type="submit"
               className="w-full bg-[#354AED] text-white py-3 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-[#8400FF]/20 focus:outline-none focus:ring-2 focus:ring-[#8400FF]/50"
@@ -242,12 +346,7 @@ const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 Enviado a {email.substring(0, 3)}...{email.substring(email.indexOf('@'))}
               </p>
             </div>
-            
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
+
             
             <button
               type="submit"
@@ -301,11 +400,6 @@ const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               />
             </div>
             
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/40 text-white/90 px-4 py-2 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
             
             <button
               type="submit"
@@ -336,6 +430,25 @@ const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1B1D20] relative overflow-hidden">
+      {/* Configuración de Sonner */}
+      <Toaster 
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          style: { 
+            background: '#1B1D20', 
+            border: '1px solid #354AED/40',
+            color: 'white'
+          },
+          classNames: {
+            title: 'text-white',
+            description: 'text-white/70',
+            actionButton: 'bg-[#354AED] hover:bg-[#354AED]/90',
+            closeButton: 'text-white/50 hover:text-white',
+          },
+        }}
+      />
       {/* Efectos de fondo */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Campo de fútbol estilizado */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaUser, FaCog, FaSearch, FaList, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext"; // Asegúrate de que la ruta sea correcta
+import { MYSQL_URI } from "../../../config/config";
 
 interface Resultado {
   resultado: string;
@@ -48,6 +49,25 @@ const Navbar: React.FC = () => {
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  // State to track window width for custom responsiveness
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
+
+  // Effect to handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // Check if we should show mobile view (less than 1000px)
+  const isMobile = windowWidth < 1000;
 
   useEffect(() => {
     const html = document.querySelector("html");
@@ -75,7 +95,8 @@ const Navbar: React.FC = () => {
 
     setLoadingSearch(true);
     try {
-      const response = await fetch(`http://3.92.147.63:3001/api/buscar/${encodeURIComponent(search)}`);
+      
+      const response = await fetch(`${MYSQL_URI}/api/buscar/${encodeURIComponent(search)}`);
       const data = await response.json();
       
       console.log("Datos recibidos:", data);
@@ -162,6 +183,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       {/* Top Navigation Bar */}
+      
       <div className="fixed top-0 left-0 right-0 bg-[#2c3ec4] dark:bg-[#1B1D20] w-full z-50">
         <nav className="font-sans font-semibold text-white px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between h-20 max-w-[1280px] w-full mx-auto">
           
@@ -175,7 +197,7 @@ const Navbar: React.FC = () => {
               />
             </a>
 
-            <div className="relative flex-grow hidden md:block">
+            <div className={`relative flex-grow ${isMobile ? 'hidden' : 'block'}`}>
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-[#EAEAEA]">
                 <FaSearch />
               </div>
@@ -235,7 +257,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Right side */}
-          <div className="hidden md:flex items-center gap-4 lg:gap-6">
+          <div className={`${isMobile ? 'hidden' : 'flex'} items-center gap-4 lg:gap-6`}>
             <a href="/Leagues" className="text-white hover:bg-gray-400 dark:hover:bg-[#2a2a2a] px-2 py-1 rounded-md transition duration-200 ease-in-out hover:shadow-sm">
               LIGAS
             </a>
@@ -249,24 +271,24 @@ const Navbar: React.FC = () => {
 
             {/* Usuario autenticado o botón INICIAR */}
 
-{user ? (
-  <div className="flex items-center gap-3">
-    <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold">
-      {user.email.charAt(0).toUpperCase()}
-    </div>
-    <button
-      onClick={handleLogout}
-      className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors text-sm font-medium"
-      title="Cerrar sesión"
-    >
-      <FaSignOutAlt />
-    </button>
-  </div>
-) : (
-  <a href="/iniciar" className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
-    <FaUser /> <span>INICIAR</span>
-  </a>
-)}
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold">
+                  {user.email.charAt(0).toUpperCase()}
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors text-sm font-medium"
+                  title="Cerrar sesión"
+                >
+                  <FaSignOutAlt />
+                </button>
+              </div>
+            ) : (
+              <a href="/iniciar" className="bg-[#EAEAEA] py-2 px-4 rounded-md flex items-center gap-2 text-[#1D1B20] font-bold hover:bg-[#d6d6d6] transition text-sm sm:text-base">
+                <FaUser /> <span>INICIAR</span>
+              </a>
+            )}
 
 
             {/* Cog and Theme Menu */}
@@ -292,7 +314,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Settings icon for mobile */}
-          <div className="md:hidden flex items-center">
+          <div className={`${isMobile ? 'flex' : 'hidden'} items-center`}>
             <button
               className="text-white hover:text-gray-300 transition text-xl"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -316,7 +338,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Search Panel */}
       {searchOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center md:hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white dark:bg-[#1B1D20] w-11/12 mx-auto rounded-lg p-4">
             <div className="relative mb-4">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-[#EAEAEA]">
@@ -390,40 +412,42 @@ const Navbar: React.FC = () => {
       )}
       
       {/* Bottom Navigation for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#2c3ec4] dark:bg-[#1B1D20] text-white z-50 shadow-lg">
-        <div className="grid grid-cols-3 h-16">
-          <a href="/Leagues" className="flex flex-col items-center justify-center">
-            <FaList className="text-xl" />
-            <span className="text-xs mt-1">Ligas</span>
-          </a>
-          
-          <button onClick={toggleSearch} className="flex flex-col items-center justify-center">
-            <FaSearch className="text-xl" />
-            <span className="text-xs mt-1">Buscar</span>
-          </button>
-          
-{user ? (
-  <button
-    onClick={handleLogout}
-    className="flex flex-col items-center justify-center"
-    title="Cerrar sesión"
-  >
-    <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold mb-1">
-      {user.email.charAt(0).toUpperCase()}
-    </div>
-    <span className="text-[10px] text-[#8400FF]">Salir</span>
-  </button>
-) : (
-  <a href="/cuenta" className="flex flex-col items-center justify-center">
-    <FaUser className="text-xl" />
-    <span className="text-xs mt-1">Perfil</span>
-  </a>
-)}
+      {isMobile && (
+        <div className="fixed bottom-0 left-0 right-0 bg-[#2c3ec4] dark:bg-[#1B1D20] text-white z-50 shadow-lg">
+          <div className="grid grid-cols-3 h-16">
+            <a href="/Leagues" className="flex flex-col items-center justify-center">
+              <FaList className="text-xl" />
+              <span className="text-xs mt-1">Ligas</span>
+            </a>
+            
+            <button onClick={toggleSearch} className="flex flex-col items-center justify-center">
+              <FaSearch className="text-xl" />
+              <span className="text-xs mt-1">Buscar</span>
+            </button>
+            
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="flex flex-col items-center justify-center"
+                title="Cerrar sesión"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold mb-1">
+                  {user.email.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-[10px] text-[#8400FF]">Salir</span>
+              </button>
+            ) : (
+              <a href="/cuenta" className="flex flex-col items-center justify-center">
+                <FaUser className="text-xl" />
+                <span className="text-xs mt-1">Perfil</span>
+              </a>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       
       {/* Add padding to the bottom on mobile to prevent content from being hidden behind the bottom nav */}
-      <div className="md:hidden h-16"></div>
+      {isMobile && <div className="h-16"></div>}
     </>
   );
 };

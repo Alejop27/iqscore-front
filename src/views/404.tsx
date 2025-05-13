@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PageWithLayout from '../components/PageWithLayout';
 
 const breakpoints = {
-  mobile: '768px',
+  mobile: '1000px',
 };
 
 const Container = styled.div`
