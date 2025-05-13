@@ -26,7 +26,7 @@ const ChatIA: React.FC = () => {
     <div
       className="fixed z-10 flex items-end"
       style={{
-        bottom: "5%",
+        bottom: "15%",
         right: isOpen ? 0 : "0",
         transition: "all 0.3s ease",
       }}

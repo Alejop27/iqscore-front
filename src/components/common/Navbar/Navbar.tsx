@@ -193,7 +193,7 @@ const Navbar: React.FC = () => {
               <img
                 src="/images/LogoIQ.png"
                 alt="IQSCORE Logo"
-                className="h-20 w-auto object-contain"
+                className="h-32 w-auto object-contain"
               />
             </a>
 
