@@ -30,7 +30,7 @@ const PaymentGateway = () => {
     try {
       const userId = new URLSearchParams(window.location.search).get('userId') || 'anonymous';
   
-      const response = await fetch('http://3.92.147.63:3001/api/MercadoPago/', {
+      const response = await fetch('http://54.226.15.229:3001/api/MercadoPago/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
