@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import ReCAPTCHA from "react-google-recaptcha";
+/*import ReCAPTCHA from "react-google-recaptcha";*/
 import { toast, Toaster } from "sonner";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { CredentialResponse } from '@react-oauth/google';
@@ -299,14 +299,15 @@ const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.goo
                 </div>
                 
                 <div className="transform scale-90 origin-left">
-                  <ReCAPTCHA
-                    sitekey="656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com"
-                    onChange={(value) => {
-                      console.log("Captcha value:", value);
-                      setCaptchaValue(value);
-                    }}
-                    theme="dark"
-                  />
+{/* <ReCAPTCHA
+  sitekey="656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com"
+  onChange={(value) => {
+    console.log("Captcha value:", value);
+    setCaptchaValue(value);
+  }}
+  theme="dark"
+/> */}
+
                 </div>
 
                 <button

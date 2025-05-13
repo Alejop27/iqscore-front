@@ -28,9 +28,15 @@ const Registro = () => {
     status: 'active',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
+  
+  setForm({
+    ...form,
+    [name]: name === "age" ? Number(value) : value,
+  });
+};
+
   
   const nextStep = () => {
     if (!form.username) {
