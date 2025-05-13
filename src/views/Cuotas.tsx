@@ -9,7 +9,7 @@ import TransfermarktOdds from '../components/common/Cards/ODDS/Transfermarket';
 
 // Breakpoints for media queries
 const breakpoints = {
-  mobile: '768px', // Standard md: breakpoint in Tailwind, matching the navbar's responsiveness
+  mobile: '1000px', // Standard md: breakpoint in Tailwind, matching the navbar's responsiveness
 };
 
 const Container = styled.div`

@@ -7,7 +7,7 @@ import AccountData from "../components/common/Usuario/AccountData";
 import PremiumPlanCard from "../components/common/Usuario/PremiumPlanCard";
 
 const breakpoints = {
-  mobile: '768px',
+  mobile: '1000px',
 };
 
 const Container = styled.div`

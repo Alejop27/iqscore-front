@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import PageWithLayout from '../components/PageWithLayout';
 import AD1 from '../components/common/Cards/ADS/Ad1';
 import MatchInfo from '../components/common/Game/InfoGame';
-import BettingOdds from '../components/common/Game/Odds';
+import MatchEvents from '../components/common/Game/Odds';
 import StartingLineup from '../components/common/Game/Headlines';
 import Ad3 from '../components/common/Cards/ADS/Ad3';
 
 const breakpoints = {
-  mobile: '768px',
+  mobile: '1000px',
 };
 
 const Container = styled.div`
@@ -87,7 +87,7 @@ const Game: React.FC = () => {
             <MatchInfo />
           </div>
           <div>
-            <BettingOdds />
+            <MatchEvents />
           </div>
           <div>
             <StartingLineup />
@@ -111,7 +111,7 @@ const Game: React.FC = () => {
 
           <RightColumn>
             <div>
-              <BettingOdds />
+              <MatchEvents />
             </div>
             <div>
               <Ad3 />

@@ -7,7 +7,7 @@ import PlayerTrajectory from '../components/common/Player/TeamsPlayer';
 import Statistics from '../components/common/Player/statistics';
 
 const breakpoints = {
-  mobile: '768px',
+  mobile: '1000px',
 };
 
 const Container = styled.div`

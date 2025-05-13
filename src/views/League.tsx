@@ -11,7 +11,7 @@ import NoticiasRelevo from '../components/common/Cards/TOPS/Noticias';
 
 // Breakpoints for media queries
 const breakpoints = {
-  mobile: '768px',
+  mobile: '1000px',
 };
 
 const Container = styled.div`
