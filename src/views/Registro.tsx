@@ -145,7 +145,7 @@ const Registro = () => {
         }
       }); 
 
-      const response = await fetch(`${MONGO_URI}api/register`, {
+      const response = await fetch(`${MONGO_URI}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
