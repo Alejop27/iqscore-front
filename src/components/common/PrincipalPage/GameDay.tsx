@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // Interfaces
 interface Team {
@@ -24,7 +23,6 @@ interface League {
 }
 
 export default function PartidosConAPI() {
-  const navigate = useNavigate();
 
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -157,7 +155,7 @@ useEffect(() => {
   key={matchIndex}
   className="py-4 mb-2 border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
 // When navigating to the match details
-onClick={() => navigate("/game", { state: { match } })}>
+>
                   <div className="grid grid-cols-3 items-center">
                     {/* Home Team */}
                     <div className="flex items-center justify-start">
