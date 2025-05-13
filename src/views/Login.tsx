@@ -70,7 +70,7 @@ const Login: React.FC = () => {
     }
   };
 
-  const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com ";
+const GOOGLE_CLIENT_ID = "656521501617-pr273c84j029tuhau1nveu3tu08gsn54.apps.googleusercontent.com";
 
   function parseJwt(token: string) {
     try {
