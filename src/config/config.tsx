@@ -1,3 +1,3 @@
 // config.ts
-export const MONGO_URI = "http://35.170.118.153:3005";
-export const MYSQL_URI = "http://3.216.26.185:3001";
+export const MONGO_URI = "https://35.170.118.153:3006";
+export const MYSQL_URI = "https://3.216.26.185:3000";

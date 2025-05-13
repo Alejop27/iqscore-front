@@ -412,39 +412,44 @@ const Navbar: React.FC = () => {
       )}
       
       {/* Bottom Navigation for Mobile */}
-      {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#2c3ec4] dark:bg-[#1B1D20] text-white z-50 shadow-lg">
-          <div className="grid grid-cols-3 h-16">
-            <a href="/Leagues" className="flex flex-col items-center justify-center">
-              <FaList className="text-xl" />
-              <span className="text-xs mt-1">Ligas</span>
-            </a>
-            
-            <button onClick={toggleSearch} className="flex flex-col items-center justify-center">
-              <FaSearch className="text-xl" />
-              <span className="text-xs mt-1">Buscar</span>
-            </button>
-            
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="flex flex-col items-center justify-center"
-                title="Cerrar sesión"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold mb-1">
-                  {user.email.charAt(0).toUpperCase()}
-                </div>
-                <span className="text-[10px] text-[#8400FF]">Salir</span>
-              </button>
-            ) : (
-              <a href="/cuenta" className="flex flex-col items-center justify-center">
-                <FaUser className="text-xl" />
-                <span className="text-xs mt-1">Perfil</span>
-              </a>
-            )}
+{isMobile && (
+  <div className="fixed bottom-0 left-0 right-0 bg-[#2c3ec4] dark:bg-[#1B1D20] text-white z-50 shadow-lg">
+    <div className="grid grid-cols-4 h-16"> {/* Cambiado de grid-cols-3 a grid-cols-4 */}
+      <a href="/Leagues" className="flex flex-col items-center justify-center">
+        <FaList className="text-xl" />
+        <span className="text-xs mt-1">Ligas</span>
+      </a>
+      
+      <a href="/Cuotas" className="flex flex-col items-center justify-center"> {/* Nueva opción de Cuotas */}
+        <span className="text-xl">💰</span> {/* Puedes reemplazar este emoji con un icono de react-icons si lo prefieres */}
+        <span className="text-xs mt-1">Cuotas</span>
+      </a>
+      
+      <button onClick={toggleSearch} className="flex flex-col items-center justify-center">
+        <FaSearch className="text-xl" />
+        <span className="text-xs mt-1">Buscar</span>
+      </button>
+      
+      {user ? (
+        <button
+          onClick={handleLogout}
+          className="flex flex-col items-center justify-center"
+          title="Cerrar sesión"
+        >
+          <div className="w-8 h-8 rounded-full bg-[#8400FF] flex items-center justify-center text-white font-bold mb-1">
+            {user.email.charAt(0).toUpperCase()}
           </div>
-        </div>
+          <span className="text-[10px] text-[#8400FF]">Salir</span>
+        </button>
+      ) : (
+        <a href="/cuenta" className="flex flex-col items-center justify-center">
+          <FaUser className="text-xl" />
+          <span className="text-xs mt-1">Perfil</span>
+        </a>
       )}
+    </div>
+  </div>
+)}
       
       {/* Add padding to the bottom on mobile to prevent content from being hidden behind the bottom nav */}
       {isMobile && <div className="h-16"></div>}
